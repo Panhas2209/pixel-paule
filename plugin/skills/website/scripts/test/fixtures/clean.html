@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clean page</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: system-ui, sans-serif;
+    color: #111;
+    background: #ffffff;
+    line-height: 1.6;
+  }
+  .prose {
+    max-width: 640px;      /* intentional readability measure, centered */
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+  h1 { font-size: 28px; margin: 0 0 20px; color: #0b0b0b; }
+  p { margin: 0 0 16px; color: #1a1a1a; }
+</style>
+</head>
+<body>
+  <main class="prose">
+    <h1>A calm, correct page</h1>
+    <p>This paragraph sits in a centered prose column with a deliberate maximum width, which is a readability feature rather than a layout defect, so the width-utilization heuristic should leave it alone.</p>
+    <p>There is no horizontal overflow, every text block clears the WCAG AA contrast bar with margin, and there are no side-by-side siblings that could disagree about their heights.</p>
+    <p>A clean first pass is a valid result: the checker should report an empty violations array and exit zero.</p>
+  </main>
+</body>
+</html>

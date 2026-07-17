@@ -1,0 +1,61 @@
+{
+  "_comment": "Single source of truth for the bundled upstream skills. Add/swap/remove a skill = edit one entry here, then run scripts/sync-upstreams.sh. scripts/check-upstreams.py bumps each `ref` to the newest release per its `update` policy. The sync + patch scripts read everything below; no skill-specific code lives in the scripts.",
+  "skills": [
+    {
+      "name": "ui-ux-pro-max",
+      "role": ["data", "checklist", "audit"],
+      "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+      "ref": "v2.9.0",
+      "update": { "track": "tag", "pattern": "v*" },
+      "sourceSubpath": ".claude/skills/ui-ux-pro-max",
+      "target": "ui-ux-pro-max",
+      "license": "MIT",
+      "licenseFile": "LICENSE",
+      "frontmatterSet": { "disable-model-invocation": true },
+      "pathRewrites": [
+        { "from": "skills/ui-ux-pro-max/scripts", "to": "${CLAUDE_PLUGIN_ROOT}/skills/ui-ux-pro-max/scripts" }
+      ]
+    },
+    {
+      "name": "emil-design-eng",
+      "role": ["motion"],
+      "repo": "https://github.com/emilkowalski/skills",
+      "ref": "8a4a02183f466f54315138e5f94b349df5b84acf",
+      "update": { "track": "branch", "branch": "main" },
+      "sourceSubpath": "skills/emil-design-eng",
+      "target": "emil-design-eng",
+      "license": "MIT",
+      "licenseFile": "LICENSE.txt",
+      "frontmatterSet": { "disable-model-invocation": true },
+      "pathRewrites": []
+    },
+    {
+      "name": "review-animations",
+      "role": ["motion-qa"],
+      "repo": "https://github.com/emilkowalski/skills",
+      "ref": "8a4a02183f466f54315138e5f94b349df5b84acf",
+      "update": { "track": "branch", "branch": "main" },
+      "sourceSubpath": "skills/review-animations",
+      "target": "review-animations",
+      "license": "MIT",
+      "licenseFile": "LICENSE.txt",
+      "frontmatterSet": {},
+      "pathRewrites": []
+    },
+    {
+      "name": "impeccable",
+      "role": ["builder", "auditor", "extract"],
+      "repo": "https://github.com/pbakaus/impeccable",
+      "ref": "skill-v3.8.0",
+      "update": { "track": "tag", "pattern": "skill-v*" },
+      "sourceSubpath": "plugin/skills/impeccable",
+      "target": "impeccable",
+      "license": "Apache-2.0",
+      "licenseFile": "LICENSE",
+      "frontmatterSet": { "disable-model-invocation": true, "user-invocable": true },
+      "pathRewrites": [
+        { "from": ".claude/skills/impeccable", "to": "${CLAUDE_PLUGIN_ROOT}/skills/impeccable" }
+      ]
+    }
+  ]
+}

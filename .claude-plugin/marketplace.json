@@ -1,0 +1,31 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "panhas2209",
+  "description": "Panhas2209 Claude Code plugin catalog.",
+  "version": "1.0.0",
+  "owner": {
+    "name": "Panhas2209"
+  },
+  "plugins": [
+    {
+      "name": "pixel-paule",
+      "source": "./plugin",
+      "description": "One-command website builder with optional brand input and a deterministic SEO/OpenGraph/performance audit. Orchestrates design-system data, a taste-driven anti-slop build, motion, and blocking composition + SEO/perf audits across three modes (new / from-reference / improve-existing).",
+      "version": "1.0.0",
+      "category": "design",
+      "keywords": [
+        "ui",
+        "ux",
+        "design",
+        "landing-page",
+        "website",
+        "animation",
+        "audit",
+        "seo",
+        "opengraph",
+        "performance",
+        "brand"
+      ]
+    }
+  ]
+}

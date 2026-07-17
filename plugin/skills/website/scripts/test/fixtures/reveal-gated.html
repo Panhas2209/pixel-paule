@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reveal-gated section</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, sans-serif; color: #111; background: #fff; }
+  .spacer { height: 1600px; } /* push the section far below the fold */
+  .reveal {
+    /* invisible until an IntersectionObserver adds .is-visible on scroll */
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .reveal.is-visible { opacity: 1; transform: none; }
+  .panel { background: #ececf1; padding: 48px; }
+  /* muted gray on the tinted panel — the low-contrast defect we must still catch
+     even though the section starts hidden */
+  .muted { color: #9a9aa2; font-size: 16px; margin: 0; max-width: 60ch; }
+</style>
+</head>
+<body>
+  <div class="spacer"></div>
+  <section class="reveal panel" data-reveal id="gated">
+    <p class="muted" id="gated-text">This caption only appears after the section scrolls into view, yet it still fails the contrast minimum and must be measured, not skipped as invisible.</p>
+  </section>
+  <script>
+    // Real reveal-on-scroll: only flips visibility when scrolled into view.
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) e.target.classList.add('is-visible');
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  </script>
+</body>
+</html>

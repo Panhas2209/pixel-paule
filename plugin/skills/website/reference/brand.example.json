@@ -1,0 +1,36 @@
+{
+  "name": "Acme Manufacturing",
+  "url": "https://acme.example",
+  "colors": {
+    "primary": "#0F3D66",
+    "secondary": "#1B7FA8",
+    "accent": "#E8A317",
+    "background": "#FFFFFF",
+    "surface": "#F4F7FA",
+    "text": "#12212E",
+    "muted": "#5A6B78",
+    "border": "#DCE4EA"
+  },
+  "fonts": {
+    "heading": "Inter",
+    "body": "Inter",
+    "mono": "JetBrains Mono"
+  },
+  "logo": "assets/logo.svg",
+  "logoDark": "assets/logo-white.svg",
+  "favicon": "assets/favicon.ico",
+  "radius": "10px",
+  "density": "comfortable",
+  "tone": "sachlich, kompetent, vertrauensbildend — B2B-Industrie, kein Hype",
+  "voice": "kurze, konkrete Sätze; Nutzen vor Features; Deutsch (Sie-Form)",
+  "doNot": [
+    "keine Stockfoto-Ästhetik",
+    "keine grellen Verläufe",
+    "kein Marketing-Buzzword-Bingo",
+    "Logo nie verzerren oder einfärben"
+  ],
+  "references": [
+    "https://www.stripe.com (Klarheit)",
+    "https://linear.app (Ruhe, Typo)"
+  ]
+}

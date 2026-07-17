@@ -1,0 +1,66 @@
+name: sync-upstreams
+
+# Weekly (and on-demand) check for newer releases of the bundled skills.
+# It resolves the latest release/commit per upstreams.json `update` policy, and if
+# anything is newer: bumps the pins, re-vendors + re-patches, bumps the plugin
+# version, and OPENS A PULL REQUEST with a changelog. Nothing lands on the default
+# branch without your review — you get a GitHub notification, see the diff, and merge.
+# If nothing is newer, it does nothing (no churn).
+#
+# One-time repo setting required for the PR step:
+#   Settings → Actions → General → Workflow permissions →
+#     ✓ Read and write permissions
+#     ✓ Allow GitHub Actions to create and approve pull requests
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check upstreams + re-vendor if newer
+        id: sync
+        run: |
+          export UPSTREAM_SUMMARY_FILE="$RUNNER_TEMP/changes.md"
+          python3 scripts/check-upstreams.py
+          if git diff --quiet upstreams.json; then
+            echo "No upstream updates."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          bash scripts/sync-upstreams.sh --bump
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Open pull request
+        if: steps.sync.outputs.changed == 'true'
+        run: |
+          BRANCH="sync/upstreams-${{ github.run_id }}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add -A
+          git commit -m "chore: sync bundled skills from upstream"
+          git push -u origin "$BRANCH"
+          {
+            echo "Automated upstream sync — bundled skills bumped to their latest releases:"
+            echo
+            cat "$RUNNER_TEMP/changes.md" 2>/dev/null || echo "(see diff)"
+            echo
+            echo "Review the diff, then merge. After merging, pull it onto a machine with:"
+            echo '`claude plugin update website-builder@jarek-plugins`'
+          } > "$RUNNER_TEMP/pr-body.md"
+          gh pr create \
+            --title "chore: sync bundled skills from upstream" \
+            --body-file "$RUNNER_TEMP/pr-body.md" \
+            --base master --head "$BRANCH"

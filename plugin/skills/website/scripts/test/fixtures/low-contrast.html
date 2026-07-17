@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Low contrast</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, sans-serif; }
+  .panel {
+    background: #e9e9ee; /* tinted panel */
+    padding: 48px;
+  }
+  /* muted gray on the tinted panel — well under 4.5:1 */
+  .muted {
+    color: #9a9aa2;
+    font-size: 16px;
+    margin: 0;
+    max-width: 60ch;
+  }
+</style>
+</head>
+<body>
+  <section class="panel">
+    <p class="muted" id="muted">This muted caption sits on a tinted panel and does not meet the WCAG AA contrast minimum for normal body text.</p>
+  </section>
+</body>
+</html>

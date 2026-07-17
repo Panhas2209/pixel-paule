@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Unequal cards</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, sans-serif; color: #111; background: #fff; }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start; /* NOT stretch — so unequal content makes unequal heights */
+    padding: 40px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .card {
+    background: #f4f4f6;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 24px;
+  }
+  h2 { margin: 0 0 12px; font-size: 20px; }
+  p { margin: 0 0 12px; line-height: 1.5; color: #222; }
+</style>
+</head>
+<body>
+  <main class="grid">
+    <article class="card" id="card-short">
+      <h2>Short card</h2>
+      <p>Just one line of copy here.</p>
+    </article>
+    <article class="card" id="card-tall">
+      <h2>Tall card</h2>
+      <p>This card carries a great deal more copy than its neighbor, which makes it noticeably taller.</p>
+      <p>A second paragraph adds even more vertical height so the two siblings clearly disagree.</p>
+      <p>And a third, to push the height difference well past both the pixel and percentage thresholds.</p>
+    </article>
+  </main>
+</body>
+</html>

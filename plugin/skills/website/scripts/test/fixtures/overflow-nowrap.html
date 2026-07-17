@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Overflow nowrap</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, sans-serif; color: #111; background: #fff; }
+  main { padding: 24px; }
+  h1 { font-size: 22px; margin: 0 0 16px; }
+  .runaway {
+    /* a single line that refuses to wrap, wider than any phone viewport */
+    white-space: nowrap;
+    font-size: 18px;
+    color: #111;
+  }
+</style>
+</head>
+<body>
+  <main>
+    <h1>Overflow test</h1>
+    <p class="runaway" id="runaway">ThisIsOneUnbreakableStringThatIsFarTooWideForAnyPhoneViewportAndWillForceHorizontalScrollingBecauseItNeverWraps_0123456789_0123456789_0123456789</p>
+  </main>
+</body>
+</html>
