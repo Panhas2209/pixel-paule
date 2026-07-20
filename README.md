@@ -1,5 +1,7 @@
 # pixel-paule
 
+<img src="docs/logo.png" align="right" width="140" alt="pixel-paule logo — replace docs/logo.png with your own">
+
 **One sentence you type → one production-grade web page you ship.**
 
 pixel-paule is a Claude Code plugin. You describe a page in plain language; it
@@ -16,7 +18,7 @@ brand lock** and a **deterministic SEO / meta / OpenGraph / load-performance aud
 
 ## The idea in one minute
 
-Ask a general-purpose AI to "build me a landing page" and you usually get
+Ask AI to "build me a landing page" and you usually get
 plausible-looking HTML that quietly breaks: horizontal scroll on mobile, cards of
 unequal height, grey-on-grey text, no `<title>`, a link that previews as a naked
 URL in Slack. It *looks* done. It isn't.
@@ -25,7 +27,7 @@ pixel-paule closes that gap with two ideas:
 
 | Idea | What it means for you |
 |---|---|
-| **One conductor, many specialists** | A single skill (`website`) sequences three expert design skills + its own checks. You talk to one thing; it delegates. No skill-picking, no prompt-juggling. |
+| **One conversation partner, many specialists** | A single skill (`website`) sequences three expert design skills + its own checks. You talk to one thing; it delegates. No skill-picking, no prompt-juggling. |
 | **"Done" is measured, not eyeballed** | Two scripts render/parse the finished page and report defects as hard numbers. The build can't declare itself finished while a real `error` is open. |
 
 The result: you stay at the level of *intent* ("make it calmer", "keep our
@@ -89,9 +91,40 @@ surprised by a wrong turn after five minutes of generation.
 | New page from scratch | `"Make a pricing page for a B2B analytics tool, trustworthy and dense."` |
 | Pin the tech stack | `"Build a docs landing page. --stack astro"` |
 | Rebuild a reference 1:1 | `"Rebuild https://example.com but with clean, accessible code."` |
-| Redesign but keep brand | `"Redesign our site, keep the logo and brand colors." (--keep-brand)` |
+| Redesign but keep brand | `"Redesign our site, keep the logo and brand colors. --keep-brand"` |
 | Fix an existing file | `"Go over ./index.html — fix spacing, typography, SEO and animations."` |
 | Just audit, no rebuild | `"Audit ./index.html for SEO and layout problems, don't change the design yet."` |
+
+> **Flags go *inside* your message.** `--keep-brand`, `--stack …`, and `brand=…`
+> are just tokens you type as part of the sentence — not separate commands. For
+> example: *"Redesign our site but keep the logo. **--keep-brand**"*. You can
+> combine them: *"Rebuild this page. **--stack astro brand=./brand.json**"*.
+---
+
+## Tech stack — default & how to change it
+
+You don't have to specify a stack. If you say nothing, pixel-paule builds with its
+default; to force a different one, add `--stack <name>` to your message.
+
+| | |
+|---|---|
+| **Default** | **Next.js + Tailwind + shadcn/ui** |
+| **Override per build** | add `--stack astro` (or `next`, `vite`, `svelte`, `html`, …) to your prompt |
+| **Where the default lives** | `plugin/skills/website/SKILL.md`, step **A0** — change that one line to set a different permanent default, then `git push` + `claude plugin update` |
+
+**Which values are allowed?** The `--stack` token is a build-framework hint, so
+you can name any framework you want. What makes pixel-paule *smarter* per stack is
+the design-system data bundled with `ui-ux-pro-max` — it has stack-specific data
+for these **16 stacks**:
+
+| Web | App / native | Other |
+|---|---|---|
+| `react`, `nextjs`, `vue`, `nuxtjs`, `nuxt-ui`, `svelte`, `astro`, `angular`, `html-tailwind`, `shadcn`, `laravel` | `swiftui`, `react-native`, `flutter`, `jetpack-compose` | `threejs` |
+
+You can see the raw source of that data in
+`plugin/skills/ui-ux-pro-max/data/stacks/*.csv` (one CSV per stack). Naming a stack
+outside this list still works — you just won't get the extra stack-tuned reference
+data for it.
 
 ---
 
@@ -101,7 +134,21 @@ Drop a `brand.json` (or `brand.yaml`) in your project and pixel-paule keeps ever
 build on-brand automatically — same colors, fonts, logo, tone, and hard "don'ts".
 No brand file? Nothing changes; it derives a look from your brief as usual.
 
-A minimal example (full template: `plugin/skills/website/reference/brand.example.json`):
+**Where does it go?** In the **root of the project you're building the site in**:
+ pixel-paule auto-discovers your file, first match wins:
+
+| Looked for (relative to your project root) |
+|---|
+| `brand.json` → `brand.yaml` → `brand.yml` → `.brand.json` → `brand/brand.json` → `brand/brand.yaml` |
+
+Anywhere else? Point at it explicitly with `brand=./config/my-brand.json` in your
+prompt. Quick start — copy the template into your project:
+
+```
+cp ~/.claude/plugins/cache/*/pixel-paule/*/skills/website/reference/brand.example.json ./brand.json
+```
+
+A minimal example:
 
 ```json
 {
@@ -122,10 +169,6 @@ A minimal example (full template: `plugin/skills/website/reference/brand.example
 | `voice` / `tone` | Drives the copy's wording and formality. |
 | `doNot` | Hard rules the build **and** the audit must respect. |
 | `name` / `url` | Feed `<title>`, canonical, and `og:` tags in the SEO audit. |
-
-Precedence when several are present:
-`brand=path` › auto-discovered file › `--keep-brand` + free text › brief-derived.
-Details: [`plugin/skills/website/reference/brand-input.md`](plugin/skills/website/reference/brand-input.md).
 
 ---
 
@@ -163,8 +206,7 @@ claude plugin marketplace add Panhas2209/pixel-paule
 claude plugin install pixel-paule@panhas2209
 ```
 
-Then reload your editor (VS Code: **Cmd/Ctrl+Shift+P → "Developer: Reload
-Window"**) and verify with `claude plugin list`. Update later with
+Then reload your editor and verify with `claude plugin list`. Update later with
 `claude plugin update pixel-paule@panhas2209`.
 
 Requirements: `node` and `python3` (both usually present). A browser/Playwright
