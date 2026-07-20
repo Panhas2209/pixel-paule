@@ -41,7 +41,7 @@ logo"), and the plugin handles the craft and the checklist underneath.
 it loads the right specialist for each phase and passes the work along so two
 builders never redo the same job.
 
-| Phase | Who does it | What comes out |
+| Steps | Who does it | What comes out |
 |---|---|---|
 | 0 · Brand (optional) | `load-brand` | If a `brand.json` exists, its colors/fonts/logo/voice become a locked constraint for every later phase. |
 | 1 · Data | `ui-ux-pro-max` | Candidate palettes, font pairings, UX rules — reference material, not the final look. |
@@ -110,7 +110,7 @@ default; to force a different one, add `--stack <name>` to your message.
 |---|---|
 | **Default** | **Next.js + Tailwind + shadcn/ui** |
 | **Override per build** | add `--stack astro` (or `next`, `vite`, `svelte`, `html`, …) to your prompt |
-| **Where the default lives** | `plugin/skills/website/SKILL.md`, step **A0** — change that one line to set a different permanent default, then `git push` + `claude plugin update` |
+
 
 **Which values are allowed?** The `--stack` token is a build-framework hint, so
 you can name any framework you want. What makes pixel-paule *smarter* per stack is
@@ -121,10 +121,7 @@ for these **16 stacks**:
 |---|---|---|
 | `react`, `nextjs`, `vue`, `nuxtjs`, `nuxt-ui`, `svelte`, `astro`, `angular`, `html-tailwind`, `shadcn`, `laravel` | `swiftui`, `react-native`, `flutter`, `jetpack-compose` | `threejs` |
 
-You can see the raw source of that data in
-`plugin/skills/ui-ux-pro-max/data/stacks/*.csv` (one CSV per stack). Naming a stack
-outside this list still works — you just won't get the extra stack-tuned reference
-data for it.
+Naming a stack outside this list still works — you just won't get the extra stack-tuned reference data for it.
 
 ---
 
@@ -141,14 +138,10 @@ No brand file? Nothing changes; it derives a look from your brief as usual.
 |---|
 | `brand.json` → `brand.yaml` → `brand.yml` → `.brand.json` → `brand/brand.json` → `brand/brand.yaml` |
 
-Anywhere else? Point at it explicitly with `brand=./config/my-brand.json` in your
-prompt. Quick start — copy the template into your project:
+Anywhere else? Point at it explicitly with `brand=./config/my-brand.json` in your prompt.
 
-```
-cp ~/.claude/plugins/cache/*/pixel-paule/*/skills/website/reference/brand.example.json ./brand.json
-```
 
-A minimal example:
+**brand.json example:**
 
 ```json
 {
@@ -164,11 +157,12 @@ A minimal example:
 
 | Field | Effect |
 |---|---|
+| `name` / `url` | Feed `<title>`, canonical, and `og:` tags in the SEO audit. |
 | `colors` / `fonts` | Locked seed — the design-data phase can only fill gaps, never override them. |
 | `logo` / `favicon` | Held fixed; never restyled. Wired into the page and the SEO audit. |
 | `voice` / `tone` | Drives the copy's wording and formality. |
 | `doNot` | Hard rules the build **and** the audit must respect. |
-| `name` / `url` | Feed `<title>`, canonical, and `og:` tags in the SEO audit. |
+
 
 ---
 
