@@ -3,59 +3,106 @@
   "skills": [
     {
       "name": "ui-ux-pro-max",
-      "role": ["data", "checklist", "audit"],
+      "role": [
+        "data",
+        "checklist",
+        "audit"
+      ],
       "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
       "ref": "v2.9.0",
-      "update": { "track": "tag", "pattern": "v*" },
+      "update": {
+        "track": "tag",
+        "pattern": "v*"
+      },
       "sourceSubpath": ".claude/skills/ui-ux-pro-max",
-      "target": "ui-ux-pro-max",
+      "target": "website-ux",
       "license": "MIT",
       "licenseFile": "LICENSE",
-      "frontmatterSet": { "disable-model-invocation": true },
+      "frontmatterSet": {
+        "disable-model-invocation": true,
+        "name": "website-ux"
+      },
       "pathRewrites": [
-        { "from": "skills/ui-ux-pro-max/scripts", "to": "${CLAUDE_PLUGIN_ROOT}/skills/ui-ux-pro-max/scripts" }
+        {
+          "from": "skills/ui-ux-pro-max",
+          "to": "${CLAUDE_PLUGIN_ROOT}/skills/website-ux"
+        }
       ]
     },
     {
       "name": "emil-design-eng",
-      "role": ["motion"],
+      "role": [
+        "motion"
+      ],
       "repo": "https://github.com/emilkowalski/skills",
       "ref": "8a4a02183f466f54315138e5f94b349df5b84acf",
-      "update": { "track": "branch", "branch": "main" },
+      "update": {
+        "track": "branch",
+        "branch": "main"
+      },
       "sourceSubpath": "skills/emil-design-eng",
-      "target": "emil-design-eng",
+      "target": "website-animation",
       "license": "MIT",
       "licenseFile": "LICENSE.txt",
-      "frontmatterSet": { "disable-model-invocation": true },
+      "frontmatterSet": {
+        "disable-model-invocation": true,
+        "name": "website-animation"
+      },
       "pathRewrites": []
     },
     {
       "name": "review-animations",
-      "role": ["motion-qa"],
+      "role": [
+        "motion-qa"
+      ],
       "repo": "https://github.com/emilkowalski/skills",
       "ref": "8a4a02183f466f54315138e5f94b349df5b84acf",
-      "update": { "track": "branch", "branch": "main" },
+      "update": {
+        "track": "branch",
+        "branch": "main"
+      },
       "sourceSubpath": "skills/review-animations",
-      "target": "review-animations",
+      "target": "website-animation-review",
       "license": "MIT",
       "licenseFile": "LICENSE.txt",
-      "frontmatterSet": {},
+      "frontmatterSet": {
+        "name": "website-animation-review"
+      },
       "pathRewrites": []
     },
     {
       "name": "impeccable",
-      "role": ["builder", "auditor", "extract"],
+      "role": [
+        "builder",
+        "auditor",
+        "extract"
+      ],
       "repo": "https://github.com/pbakaus/impeccable",
       "ref": "skill-v3.8.0",
-      "update": { "track": "tag", "pattern": "skill-v*" },
+      "update": {
+        "track": "tag",
+        "pattern": "skill-v*"
+      },
       "sourceSubpath": "plugin/skills/impeccable",
-      "target": "impeccable",
+      "target": "website-build",
       "license": "Apache-2.0",
       "licenseFile": "LICENSE",
-      "frontmatterSet": { "disable-model-invocation": true, "user-invocable": true },
+      "frontmatterSet": {
+        "disable-model-invocation": true,
+        "user-invocable": true,
+        "name": "website-build"
+      },
       "pathRewrites": [
-        { "from": ".claude/skills/impeccable", "to": "${CLAUDE_PLUGIN_ROOT}/skills/impeccable" }
+        {
+          "from": ".claude/skills/impeccable",
+          "to": "${CLAUDE_PLUGIN_ROOT}/skills/website-build"
+        },
+        {
+          "from": "skills/impeccable",
+          "to": "skills/website-build"
+        }
       ]
     }
-  ]
+  ],
+  "_rename_note": "`name` = upstream provenance (used for cloning + NOTICE). `target` = the local skill dir & invocation name. frontmatterSet.name renames the vendored skill on every sync so updates keep the friendly names."
 }

@@ -23,19 +23,19 @@ method and apply it. Your job is sequencing, hand-off, and keeping two builders 
 twice.
 
 The lane assignment below was decided by a blind head-to-head bake-off (see `scripts/bake-off/`):
-**impeccable** produces the more distinctive, less-AI-looking, higher-craft build; **ui-ux-pro-max** is
-the stronger systematic data source and production/accessibility checklist; **emil** is the motion
+**website-build** produces the more distinctive, less-AI-looking, higher-craft build; **website-ux** is
+the stronger systematic data source and production/accessibility checklist; **website-animation** is the motion
 specialist. Respect those lanes.
 
 ## Specialists → assets (the one place to change when swapping a skill)
 
 | Role | Asset to use | How |
 |---|---|---|
-| Data / inspiration | `ui-ux-pro-max` | run its engine: `python3 "$PR/skills/ui-ux-pro-max/scripts/search.py" "<keywords>" --design-system` |
-| Production checklist / audit | `ui-ux-pro-max` | read the rule sections of `$PR/skills/ui-ux-pro-max/SKILL.md`, or query `--domain ux\|style\|color` |
-| Builder (taste, anti-slop) | `impeccable` | read `$PR/skills/impeccable/SKILL.md` + the relevant `reference/<command>.md`, then build |
-| Motion | `emil-design-eng` | read `$PR/skills/emil-design-eng/SKILL.md` and apply |
-| Motion QA gate | `review-animations` | read `$PR/skills/review-animations/SKILL.md` and apply to the motion you added |
+| Data / inspiration | `website-ux` | run its engine: `python3 "$PR/skills/website-ux/scripts/search.py" "<keywords>" --design-system` |
+| Production checklist / audit | `website-ux` | read the rule sections of `$PR/skills/website-ux/SKILL.md`, or query `--domain ux\|style\|color` |
+| Builder (taste, anti-slop) | `website-build` | read `$PR/skills/website-build/SKILL.md` + the relevant `reference/<command>.md`, then build |
+| Motion | `website-animation` | read `$PR/skills/website-animation/SKILL.md` and apply |
+| Motion QA gate | `website-animation-review` | read `$PR/skills/website-animation-review/SKILL.md` and apply to the motion you added |
 | Composition audit gate | `verify-composition` (first-party) | `node "$PR/skills/website/scripts/verify-composition.mjs" <file-or-url> --breakpoints 390,768,1280` |
 | SEO / meta / OpenGraph / performance audit gate | `verify-seo-perf` (first-party) | `node "$PR/skills/website/scripts/verify-seo-perf.mjs" <file-or-url>` |
 | Optional brand constraint | `load-brand` (first-party) | `node "$PR/skills/website/scripts/load-brand.mjs" [path]` — see `reference/brand-input.md` |
@@ -44,7 +44,7 @@ specialist. Respect those lanes.
 **Reading its `SKILL.md`** (and only the `reference/` files it points you to for the current task) and
 **running its scripts**. Do not rely on auto-invocation — they are intentionally set
 `disable-model-invocation` so they never fire on their own and compete with you. (A power user may still
-call one directly, e.g. `/pixel-paule:impeccable audit`; that's fine and bypasses you on purpose.)
+call one directly, e.g. `/pixel-paule:website-build audit`; that's fine and bypasses you on purpose.)
 
 ## Step 0 — Resolve the plugin root (do this first, once)
 
@@ -68,7 +68,7 @@ node "$PR/skills/website/scripts/load-brand.mjs" ${BRAND_PATH:-}   # BRAND_PATH 
   (Mode B `--keep-brand`), exactly as the base pipeline does. Free-text brand hints in the prompt still apply.
 - Output `{"present": true, "brand": {…}}` → **the brand wins over taste.** Its `colors`, `fonts`, `logo`,
   `radius`, `density`, `voice`/`tone`, and every entry in `doNot` are locked inputs, not suggestions. Reference
-  data (A1) and impeccable's taste (A2) fill only what the brand left open. Feed `name`/`url` into the SEO audit.
+  data (A1) and website-build's taste (A2) fill only what the brand left open. Feed `name`/`url` into the SEO audit.
 
 Precedence: explicit `brand=path` > auto-discovered brand file > `--keep-brand` + free text > brief-derived.
 Full schema and per-phase rules: `$PR/skills/website/reference/brand-input.md`.
@@ -85,8 +85,8 @@ If genuinely ambiguous, ask one short question. Then run the matching pipeline.
 
 ## Mode A — Build new from a brief
 
-**A0 · Shape — discover, then confirm (do NOT skip this).** Before any build, run impeccable's shape step:
-read `$PR/skills/impeccable/reference/shape.md` and follow it. Run **one focused discovery round** — call the
+**A0 · Shape — discover, then confirm (do NOT skip this).** Before any build, run website-build's shape step:
+read `$PR/skills/website-build/reference/shape.md` and follow it. Run **one focused discovery round** — call the
 AskUserQuestion tool with 2–3 questions covering: the page's purpose/goal, the audience and their state of
 mind, the **real content/data** it must show, scope & fidelity, and visual direction (color strategy + a
 one-sentence scene + 1–2 named anchor references). Fold the stack default (**Next.js + Tailwind + shadcn/ui**,
@@ -95,33 +95,33 @@ brief (3–5 bullets)** — what you're building, the primary user action, the v
 and **stop for explicit confirm/override. Do not build in the same turn.** Skip the discovery round only when
 the prompt already pins purpose + content + direction unambiguously; the brief + confirmation are never skipped.
 
-**A1 · Data foundation — ui-ux-pro-max.** Run the engine for a starting design system:
+**A1 · Data foundation — website-ux.** Run the engine for a starting design system:
 ```bash
-python3 "$PR/skills/ui-ux-pro-max/scripts/search.py" "<product type> <industry> <keywords>" --design-system
+python3 "$PR/skills/website-ux/scripts/search.py" "<product type> <industry> <keywords>" --design-system
 ```
 Treat its palette / font-pairing / style / pattern as **candidates and reference data**, not a lock.
 Note its UX-rule domains for the later audit. Do **not** let it author the final page — it is data here.
 **If Step 0b loaded a brand**, the brand's `colors`/`fonts` are the locked seed and this engine's output is
 subordinate reference only — use it to fill gaps the brand didn't specify, never to override it.
 
-**A2 · Build — impeccable (lead).** Read `$PR/skills/impeccable/SKILL.md`, then `reference/craft.md`, and
+**A2 · Build — website-build (lead).** Read `$PR/skills/website-build/SKILL.md`, then `reference/craft.md`, and
 the references craft.md points to (typically `layout`, `typeset`, `colorize`, `animate`, plus `brand` for
 marketing surfaces or `product` for app UI). **Shape is already done and confirmed in A0 — skip craft.md's
 Step 1 (shape); treat the confirmed brief as the locked direction** and go straight to its build steps. You
-may run `node "$PR/skills/impeccable/scripts/palette.mjs"` for a brand seed. Build the real, production-grade
-page, honoring impeccable's anti-slop doctrine and absolute bans. Feed A1's candidates in as options; impeccable's taste decides. This is where the design
+may run `node "$PR/skills/website-build/scripts/palette.mjs"` for a brand seed. Build the real, production-grade
+page, honoring website-build's anti-slop doctrine and absolute bans. Feed A1's candidates in as options; website-build's taste decides. This is where the design
 actually gets made.
 
-**A3 · Motion — emil-design-eng.** Read `$PR/skills/emil-design-eng/SKILL.md` and add/refine motion on the
+**A3 · Motion — website-animation.** Read `$PR/skills/website-animation/SKILL.md` and add/refine motion on the
 interactive surfaces only. **Constraint:** do not restructure layout or change the palette/type from A2 —
 motion only.
 
-**A3b · Motion QA — review-animations.** Read `$PR/skills/review-animations/SKILL.md` and review the motion
+**A3b · Motion QA — website-animation-review.** Read `$PR/skills/website-animation-review/SKILL.md` and review the motion
 you just added against its craft bar. Fix what it flags. (Automatic; no need to ask the user.)
 
-**A4 · Audit & harden — impeccable + ui-ux-pro-max checklist.** Read impeccable `reference/audit.md`,
-`polish.md`, `harden.md` and run them as a **reviewer**. Then cross-check against ui-ux-pro-max's rule set.
-Do **not** run impeccable's `craft`/`shape`/`init` here — those rebuild and would re-litigate A2.
+**A4 · Audit & harden — website-build + website-ux checklist.** Read website-build `reference/audit.md`,
+`polish.md`, `harden.md` and run them as a **reviewer**. Then cross-check against website-ux's rule set.
+Do **not** run website-build's `craft`/`shape`/`init` here — those rebuild and would re-litigate A2.
 
 **Run the deterministic composition check — it is blocking.** Measure the built artifact at every breakpoint
 *before* you say "done"; do not sign off from an eyeballed screenshot:
@@ -175,7 +175,7 @@ metrics gracefully.
 tool is available, capture a screenshot for visual fidelity; otherwise proceed from HTML/CSS and say so.
 Download the brand assets to preserve — **logo**, brand colors, fonts.
 
-**B1 · Extract — impeccable.** Read `$PR/skills/impeccable/SKILL.md` + `reference/extract.md` (and
+**B1 · Extract — website-build.** Read `$PR/skills/website-build/SKILL.md` + `reference/extract.md` (and
 `document.md`) to capture the reference's design tokens, structure, and brand into a usable system.
 
 **B2 · Branch on intent.**
@@ -190,20 +190,20 @@ Download the brand assets to preserve — **logo**, brand colors, fonts.
 
 ---
 
-## Mode C — Audit & improve an existing page (impeccable's home turf)
+## Mode C — Audit & improve an existing page (website-build's home turf)
 
 **C0 · Read the work.** Read the existing file(s) / project. Treat the existing brand and identity as
-**fixed** unless the user asks to change it (impeccable's "identity-preservation wins"). If the goal of the
+**fixed** unless the user asks to change it (website-build's "identity-preservation wins"). If the goal of the
 pass is unclear, ask **one** quick question (what should this improvement achieve?); otherwise the existing
 page is the content — proceed without an interview.
 
-**C1 · Diagnose.** Read impeccable `reference/audit.md` + `critique.md` and run them over the code. Cross-
-check with the ui-ux-pro-max rule set (`--domain ux` / the SKILL.md checklist). Produce a short, concrete
+**C1 · Diagnose.** Read website-build `reference/audit.md` + `critique.md` and run them over the code. Cross-
+check with the website-ux rule set (`--domain ux` / the SKILL.md checklist). Produce a short, concrete
 findings list (spacing, typography, hierarchy, color/contrast, a11y, anti-slop tells, motion, states).
 
-**C2 · Fix with the matching command.** For each finding, read and apply the matching impeccable reference
+**C2 · Fix with the matching command.** For each finding, read and apply the matching website-build reference
 and edit in place: spacing/rhythm → `layout`; typography → `typeset`; flat/garish color → `colorize`;
-motion → `animate` (then read `emil-design-eng` for depth and run the `review-animations` gate); broad
+motion → `animate` (then read `website-animation` for depth and run the `website-animation-review` gate); broad
 quality → `polish`; production-readiness (errors, i18n, edge/empty states) → `harden`; performance →
 `optimize`; responsiveness → `adapt`. Re-render and read a screenshot to confirm each fix. Don't invent
 defects to look busy; a clean "first pass is solid" is a valid result.
@@ -230,7 +230,7 @@ legitimately shouldn't have (e.g. a canonical for a fragment) — justify skips 
 
 ## Cross-cutting rules (all modes)
 
-- **One builder at a time.** ui-ux-pro-max provides data and the checklist; impeccable builds and audits.
+- **One builder at a time.** website-ux provides data and the checklist; website-build builds and audits.
   Never run both as builders on the same surface — that's the conflict this plugin exists to prevent.
 - **Hand-off contract.** Each phase receives the previous phase's concrete file paths + the design tokens.
   Never re-run an earlier generative phase.

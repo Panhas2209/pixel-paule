@@ -44,13 +44,16 @@ the same job.
 | Step | Who does it | What comes out |
 |---|---|---|
 | 0 · Brand (optional) | `load-brand` | If a `brand.json` exists, its colors/fonts/logo/voice become a fixed rule for every later step. |
-| 1 · Data | `ui-ux-pro-max` | Candidate palettes, font pairings, UX rules — reference material, not the final look. |
-| 2 · Build | `impeccable` | The real page: hand-crafted, non-generic, production-ready code. |
-| 3 · Motion | `emil-design-eng` + `review-animations` | Small interactions on the moving parts, then a motion review. |
+| 1 · Data | `website-ux` | Candidate palettes, font pairings, UX rules — reference material, not the final look. |
+| 2 · Build | `website-build` | The real page: hand-crafted, non-generic, production-ready code. |
+| 3 · Motion | `website-animation` + `website-animation-review` | Small interactions on the moving parts, then a motion review. |
 | 4 · Audit (layout) | `verify-composition` | Blocking check: overflow, uneven heights, width use, contrast — with numbers. |
 | 4b · Audit (findability) | `verify-seo-perf` | Blocking check: SEO, meta, OpenGraph, structured data, load performance. |
 
 Only `website` reacts to your request; it pulls in each specialist when needed.
+The specialist skills are named by what they do (`website-build`, `website-ux`,
+`website-animation`, `website-animation-review`); they're bundled from upstream
+projects — see [Credits](#credits--licenses) for the sources.
 
 ---
 
@@ -112,8 +115,8 @@ force another one, add `--stack <name>` to your message.
 | **Change per build** | add `--stack astro` (or `next`, `vite`, `svelte`, `html`, …) to your prompt |
 
 **Which values work?** `--stack` is just a hint, so you can name any framework.
-What makes pixel-paule *smarter* per stack is the design data bundled with
-`ui-ux-pro-max`, which covers these **16 stacks**:
+What makes pixel-paule *smarter* per stack is the design data bundled with `website-ux`
+(from ui-ux-pro-max), which covers these **16 stacks**:
 
 | Web | App / native | Other |
 |---|---|---|
@@ -126,7 +129,8 @@ reference data.
 
 ## Visual style — pick a look
 
-You can steer the *look* of the page. The bundled `ui-ux-pro-max` skill ships a
+You can steer the *look* of the page. The bundled `website-ux` skill (from
+ui-ux-pro-max) ships a
 catalog of 80+ named visual styles — Minimalism / Swiss, Glassmorphism,
 Neumorphism, Brutalism, Bento Grid, Claymorphism, Aurora UI, Cyberpunk / HUD,
 Editorial / Magazine, Dark Mode (OLED), Data-Dense Dashboard, and many more.
@@ -230,7 +234,8 @@ the runtime performance numbers.
 
 | Want to… | Do this |
 |---|---|
-| Call a bundled specialist directly | `/pixel-paule:impeccable audit` |
+| Call a bundled specialist directly | `/pixel-paule:website-build audit` |
+| Run only the SEO/OpenGraph/performance audit | `/pixel-paule:website-seo ./index.html` |
 | Set a stack | add `--stack next\|astro\|vite\|svelte\|html` to your prompt |
 | Point at a specific brand file | add `brand=./config/brand.json` to your prompt |
 | Keep an existing brand on a redesign | add `--keep-brand` |

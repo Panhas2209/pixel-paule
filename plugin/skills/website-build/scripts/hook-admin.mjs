@@ -36,11 +36,11 @@ import {
 
 const ACTIONS = new Set(['status', 'on', 'off', 'ignore-rule', 'ignore-file', 'ignore-value', 'reset']);
 const IMPECCABLE_HOOK_COMMAND_MARKERS = [
-  'skills/impeccable/scripts/hook-probe.mjs',
-  'skills/impeccable/scripts/hook.mjs',
-  'skills/impeccable/scripts/hook-before-edit.mjs',
-  'skills/impeccable/scripts/hook-after-edit.mjs',
-  'skills/impeccable/scripts/hook-stop.mjs',
+  'skills/website-build/scripts/hook-probe.mjs',
+  'skills/website-build/scripts/hook.mjs',
+  'skills/website-build/scripts/hook-before-edit.mjs',
+  'skills/website-build/scripts/hook-after-edit.mjs',
+  'skills/website-build/scripts/hook-stop.mjs',
 ];
 const TIMEOUT_SECONDS = 5;
 const STATUS_MESSAGE = 'Checking UI changes';
@@ -48,7 +48,7 @@ const STATUS_MESSAGE = 'Checking UI changes';
 const HOOK_MANIFEST_TARGETS = [
   {
     provider: '.claude',
-    skillRel: '${CLAUDE_PLUGIN_ROOT}/skills/impeccable',
+    skillRel: '${CLAUDE_PLUGIN_ROOT}/skills/website-build',
     destRel: '.claude/settings.local.json',
     sharedDestRel: '.claude/settings.json',
     manifest: () => ({
@@ -60,7 +60,7 @@ const HOOK_MANIFEST_TARGETS = [
             hooks: [
               {
                 type: 'command',
-                command: 'node "${CLAUDE_PROJECT_DIR}/${CLAUDE_PLUGIN_ROOT}/skills/impeccable/scripts/hook.mjs"',
+                command: 'node "${CLAUDE_PROJECT_DIR}/${CLAUDE_PLUGIN_ROOT}/skills/website-build/scripts/hook.mjs"',
                 timeout: TIMEOUT_SECONDS,
                 statusMessage: STATUS_MESSAGE,
               },
@@ -72,7 +72,7 @@ const HOOK_MANIFEST_TARGETS = [
   },
   {
     provider: '.agents',
-    skillRel: '.agents/skills/impeccable',
+    skillRel: '.agents/skills/website-build',
     destRel: '.codex/hooks.json',
     manifest: () => ({
       description: 'Impeccable design detector: runs after Edit/Write/apply_patch on UI files and surfaces findings as system reminders.',
@@ -83,7 +83,7 @@ const HOOK_MANIFEST_TARGETS = [
             hooks: [
               {
                 type: 'command',
-                command: 'node "$(git rev-parse --show-toplevel)/.agents/skills/impeccable/scripts/hook.mjs"',
+                command: 'node "$(git rev-parse --show-toplevel)/.agents/skills/website-build/scripts/hook.mjs"',
                 timeout: TIMEOUT_SECONDS,
                 statusMessage: STATUS_MESSAGE,
               },
@@ -95,14 +95,14 @@ const HOOK_MANIFEST_TARGETS = [
   },
   {
     provider: '.cursor',
-    skillRel: '.cursor/skills/impeccable',
+    skillRel: '.cursor/skills/website-build',
     destRel: '.cursor/hooks.json',
     manifest: () => ({
       version: 1,
       hooks: {
         preToolUse: [
           {
-            command: 'node ".cursor/skills/impeccable/scripts/hook-before-edit.mjs"',
+            command: 'node ".cursor/skills/website-build/scripts/hook-before-edit.mjs"',
             timeout: TIMEOUT_SECONDS,
           },
         ],
@@ -115,7 +115,7 @@ const HOOK_MANIFEST_TARGETS = [
     // the cloud/app agent. Schema differs: lowercase `postToolUse`, flat entries,
     // `bash`/`timeoutSec`, and a `matcher` regex against the `edit`/`create` tools.
     provider: '.github',
-    skillRel: '.github/skills/impeccable',
+    skillRel: '.github/skills/website-build',
     destRel: '.github/hooks/impeccable.json',
     manifest: () => ({
       version: 1,
@@ -124,7 +124,7 @@ const HOOK_MANIFEST_TARGETS = [
           {
             type: 'command',
             matcher: 'edit|create|apply_patch',
-            bash: 'node "$(git rev-parse --show-toplevel)/.github/skills/impeccable/scripts/hook.mjs"',
+            bash: 'node "$(git rev-parse --show-toplevel)/.github/skills/website-build/scripts/hook.mjs"',
             timeoutSec: TIMEOUT_SECONDS,
           },
         ],
