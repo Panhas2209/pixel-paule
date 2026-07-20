@@ -58,9 +58,9 @@ jobs:
             cat "$RUNNER_TEMP/changes.md" 2>/dev/null || echo "(see diff)"
             echo
             echo "Review the diff, then merge. After merging, pull it onto a machine with:"
-            echo '`claude plugin update website-builder@jarek-plugins`'
+            echo '`claude plugin update pixel-paule@panhas2209`'
           } > "$RUNNER_TEMP/pr-body.md"
           gh pr create \
             --title "chore: sync bundled skills from upstream" \
             --body-file "$RUNNER_TEMP/pr-body.md" \
-            --base master --head "$BRANCH"
+            --base main --head "$BRANCH"
