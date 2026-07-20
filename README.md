@@ -2,146 +2,168 @@
 
 <img src="docs/logo.png" align="right" width="140" alt="pixel-paule logo — replace docs/logo.png with your own">
 
-**One sentence you type → one production-grade web page you ship.**
+**Type one sentence. Get one production-ready web page.**
 
-pixel-paule is a Claude Code plugin. You describe a page in plain language; it
-runs a full design studio for you — design system, taste-driven build, motion,
-and a two-part *blocking* audit (layout + SEO/OpenGraph/performance) — and hands
-back real, production-quality code. You never install, pick, or invoke a single
-design skill by hand. You just talk; it orchestrates.
+pixel-paule is a Claude Code plugin. You describe a page in plain words. It runs a
+full design studio for you — design system, hand-crafted build, motion, and a
+two-part audit (layout + SEO/OpenGraph/performance) — and gives you real,
+production-ready code. You never install, pick, or call a design skill yourself.
+You just talk; it does the rest.
 
-It's an extended fork of [`website-builder`](https://github.com/Jarek2k/website-builder)
-that keeps everything good and adds the two things real sites need: an **optional
-brand lock** and a **deterministic SEO / meta / OpenGraph / load-performance audit**.
+It's an extended fork of [`website-builder`](https://github.com/Jarek2k/website-builder).
+It keeps everything good and adds the two things real sites need: an **optional
+brand lock** and a **built-in SEO / meta / OpenGraph / performance audit**.
 
 ---
 
 ## The idea in one minute
 
-Ask AI to "build me a landing page" and you usually get
-plausible-looking HTML that quietly breaks: horizontal scroll on mobile, cards of
-unequal height, grey-on-grey text, no `<title>`, a link that previews as a naked
-URL in Slack. It *looks* done. It isn't.
+Ask an AI to "build me a landing page" and you often get HTML that looks fine but
+quietly breaks: sideways scroll on mobile, cards of different heights, grey text on
+grey, no `<title>`, a link that shows as a bare URL in Slack. It *looks* done. It
+isn't.
 
-pixel-paule closes that gap with two ideas:
+pixel-paule fixes that with two ideas:
 
 | Idea | What it means for you |
 |---|---|
-| **One conversation partner, many specialists** | A single skill (`website`) sequences three expert design skills + its own checks. You talk to one thing; it delegates. No skill-picking, no prompt-juggling. |
-| **"Done" is measured, not eyeballed** | Two scripts render/parse the finished page and report defects as hard numbers. The build can't declare itself finished while a real `error` is open. |
+| **One conversation partner, many specialists** | You talk to one skill (`website`). It calls three expert design skills plus its own checks. No skill-picking, no prompt-juggling. |
+| **"Done" is measured, not guessed** | Two scripts read the finished page and report problems as hard numbers. The build can't call itself done while a real `error` is still open. |
 
-The result: you stay at the level of *intent* ("make it calmer", "keep our
-logo"), and the plugin handles the craft and the checklist underneath.
+So you stay at the level of *intent* ("make it calmer", "keep our logo"). The
+plugin handles the craft and the checklist underneath.
 
 ---
 
 ## How it works
 
-`website` is the only entry point. It doesn't invent palettes, type, or motion —
-it loads the right specialist for each phase and passes the work along so two
-builders never redo the same job.
+`website` is the only way in. It doesn't invent palettes, type, or motion. It calls
+the right specialist for each step and passes the work along, so no two builders do
+the same job.
 
-| Steps | Who does it | What comes out |
+| Step | Who does it | What comes out |
 |---|---|---|
-| 0 · Brand (optional) | `load-brand` | If a `brand.json` exists, its colors/fonts/logo/voice become a locked constraint for every later phase. |
+| 0 · Brand (optional) | `load-brand` | If a `brand.json` exists, its colors/fonts/logo/voice become a fixed rule for every later step. |
 | 1 · Data | `ui-ux-pro-max` | Candidate palettes, font pairings, UX rules — reference material, not the final look. |
-| 2 · Build | `impeccable` | The actual page: taste-driven, anti-"AI-slop", production-grade code. |
-| 3 · Motion | `emil-design-eng` + `review-animations` | Micro-interactions on interactive surfaces, then a motion QA pass. |
-| 4 · Audit (layout) | `verify-composition` | Blocking check: overflow, unequal heights, width use, contrast — with numbers. |
-| 4b · Audit (findability) | `verify-seo-perf` | Blocking check: SEO, meta, OpenGraph/social, structured data, load performance. |
+| 2 · Build | `impeccable` | The real page: hand-crafted, non-generic, production-ready code. |
+| 3 · Motion | `emil-design-eng` + `review-animations` | Small interactions on the moving parts, then a motion review. |
+| 4 · Audit (layout) | `verify-composition` | Blocking check: overflow, uneven heights, width use, contrast — with numbers. |
+| 4b · Audit (findability) | `verify-seo-perf` | Blocking check: SEO, meta, OpenGraph, structured data, load performance. |
 
-The specialists are kept out of auto-routing, so **only `website` reacts to your
-request** and pulls each specialist in on demand.
+Only `website` reacts to your request; it pulls in each specialist when needed.
 
 ---
 
-## The three modes (it picks automatically)
+## The three modes (it picks for you)
 
 You never name a mode. pixel-paule reads your input and chooses:
 
 | You give it… | Mode | What it does |
 |---|---|---|
-| A description / brief / nothing | **New** | Asks 2–3 sharp questions, shows a short design brief, waits for your OK, then builds → motion → audits. |
-| A URL or an existing site | **From reference** | Fetches + extracts the reference, then either rebuilds it faithfully *or* redesigns it while keeping the brand. |
-| A file or project path | **Improve** | Diagnoses the existing page, fixes issues in place, re-audits. Won't touch your identity unless you ask. |
+| A description, a brief, or nothing | **New** | Asks 2–3 short questions, shows a quick plan, waits for your OK, then builds → motion → audits. |
+| A URL or an existing site | **From reference** | Reads the reference, then either rebuilds it closely *or* redesigns it while keeping the brand. |
+| A file or project path | **Improve** | Checks the page, fixes problems in place, audits again. Won't change your identity unless you ask. |
 
-### What actually happens — a worked example
+### A worked example
 
 You type:
 
 > **"Build me a landing page for a calm voice-notes second-brain app."**
 
-Here's the flow, so there are no surprises:
+Here's what happens, so nothing surprises you:
 
 | Step | What you see |
 |---|---|
-| 1. Shape | It asks ~3 focused questions: who's it for, what's the one action, any color/visual direction. |
-| 2. Brief | It replies with a 3–5 bullet plan (what it's building, primary CTA, visual lane) and **stops for your confirmation**. |
-| 3. Build | On your OK, it builds the real page (default stack Next.js + Tailwind + shadcn/ui; override with `--stack`). |
-| 4. Motion | It adds tasteful motion, then reviews it against a craft bar. |
-| 5. Audits | It runs both gates, fixes every `error`, and only then says "done" — telling you what it checked. |
+| 1. Shape | It asks ~3 questions: who it's for, the one main action, any color/visual direction. |
+| 2. Plan | It replies with a 3–5 bullet plan and **waits for your OK**. |
+| 3. Build | After your OK, it builds the real page (default stack Next.js + Tailwind + shadcn/ui; change with `--stack`). |
+| 4. Motion | It adds tasteful motion, then reviews it. |
+| 5. Audits | It runs both checks, fixes every `error`, and only then says "done". |
 
-The key habit: **it confirms the direction before building**, so you're never
-surprised by a wrong turn after five minutes of generation.
+The point: **it confirms the direction before it builds**, so you don't lose five
+minutes to a wrong turn.
 
 ### More example prompts
 
 | Goal | Say something like… |
 |---|---|
 | New page from scratch | `"Make a pricing page for a B2B analytics tool, trustworthy and dense."` |
-| Pin the tech stack | `"Build a docs landing page. --stack astro"` |
+| Set the tech stack | `"Build a docs landing page. --stack astro"` |
 | Rebuild a reference 1:1 | `"Rebuild https://example.com but with clean, accessible code."` |
 | Redesign but keep brand | `"Redesign our site, keep the logo and brand colors. --keep-brand"` |
 | Fix an existing file | `"Go over ./index.html — fix spacing, typography, SEO and animations."` |
-| Just audit, no rebuild | `"Audit ./index.html for SEO and layout problems, don't change the design yet."` |
+| Audit only, no rebuild | `"Audit ./index.html for SEO and layout problems, don't change the design yet."` |
 
 > **Flags go *inside* your message.** `--keep-brand`, `--stack …`, and `brand=…`
-> are just tokens you type as part of the sentence — not separate commands. For
-> example: *"Redesign our site but keep the logo. **--keep-brand**"*. You can
-> combine them: *"Rebuild this page. **--stack astro brand=./brand.json**"*.
+> are just words you type in the sentence, not separate commands. Example:
+> *"Redesign our site but keep the logo. **--keep-brand**"*. You can mix them:
+> *"Rebuild this page. **--stack astro brand=./brand.json**"*.
+
 ---
 
-## Tech stack — default & how to change it
+## Tech stack — default and how to change it
 
-You don't have to specify a stack. If you say nothing, pixel-paule builds with its
-default; to force a different one, add `--stack <name>` to your message.
+You don't have to name a stack. Say nothing and pixel-paule uses its default. To
+force another one, add `--stack <name>` to your message.
 
 | | |
 |---|---|
 | **Default** | **Next.js + Tailwind + shadcn/ui** |
-| **Override per build** | add `--stack astro` (or `next`, `vite`, `svelte`, `html`, …) to your prompt |
+| **Change per build** | add `--stack astro` (or `next`, `vite`, `svelte`, `html`, …) to your prompt |
 
-
-**Which values are allowed?** The `--stack` token is a build-framework hint, so
-you can name any framework you want. What makes pixel-paule *smarter* per stack is
-the design-system data bundled with `ui-ux-pro-max` — it has stack-specific data
-for these **16 stacks**:
+**Which values work?** `--stack` is just a hint, so you can name any framework.
+What makes pixel-paule *smarter* per stack is the design data bundled with
+`ui-ux-pro-max`, which covers these **16 stacks**:
 
 | Web | App / native | Other |
 |---|---|---|
 | `react`, `nextjs`, `vue`, `nuxtjs`, `nuxt-ui`, `svelte`, `astro`, `angular`, `html-tailwind`, `shadcn`, `laravel` | `swiftui`, `react-native`, `flutter`, `jetpack-compose` | `threejs` |
 
-Naming a stack outside this list still works — you just won't get the extra stack-tuned reference data for it.
+A stack outside this list still works. You just don't get the extra stack-specific
+reference data.
+
+---
+
+## Visual style — pick a look
+
+You can steer the *look* of the page. The bundled `ui-ux-pro-max` skill ships a
+catalog of 80+ named visual styles — Minimalism / Swiss, Glassmorphism,
+Neumorphism, Brutalism, Bento Grid, Claymorphism, Aurora UI, Cyberpunk / HUD,
+Editorial / Magazine, Dark Mode (OLED), Data-Dense Dashboard, and many more.
+
+See the full list here:
+[ui-ux-pro-max — Available styles](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill#available-styles-67).
+
+You don't need a flag — just name the style in your prompt. pixel-paule looks it
+up and uses it as the visual direction for the build.
+
+```
+"Build a landing page for a fintech app in a Glassmorphism style, dark mode."
+"Make a docs homepage — Swiss / Minimalism, lots of whitespace."
+"Redesign this page as a Bento Grid."
+```
+
+Tip: you can also nudge the intensity in plain words — *"make it bolder"* or
+*"keep it calmer"* — and pixel-paule adjusts without you naming a style.
 
 ---
 
 ## Brand input (optional, but powerful)
 
-Drop a `brand.json` (or `brand.yaml`) in your project and pixel-paule keeps every
-build on-brand automatically — same colors, fonts, logo, tone, and hard "don'ts".
-No brand file? Nothing changes; it derives a look from your brief as usual.
+Put a `brand.json` (or `brand.yaml`) in your project and pixel-paule keeps every
+build on-brand: same colors, fonts, logo, tone, and hard "don'ts". No brand file?
+Nothing changes; it builds a look from your brief as usual.
 
-**Where does it go?** In the **root of the project you're building the site in**:
- pixel-paule auto-discovers your file, first match wins:
+**Where does it go?** In the **root of the project you build the site in**.
+pixel-paule finds it automatically (first match wins):
 
-| Looked for (relative to your project root) |
+| Looked for (from your project root) |
 |---|
 | `brand.json` → `brand.yaml` → `brand.yml` → `.brand.json` → `brand/brand.json` → `brand/brand.yaml` |
 
-Anywhere else? Point at it explicitly with `brand=./config/my-brand.json` in your prompt.
+Somewhere else? Point at it with `brand=./config/my-brand.json` in your prompt.
 
-
-**brand.json example:**
+**Example `brand.json`:**
 
 ```json
 {
@@ -157,62 +179,59 @@ Anywhere else? Point at it explicitly with `brand=./config/my-brand.json` in you
 
 | Field | Effect |
 |---|---|
-| `name` / `url` | Feed `<title>`, canonical, and `og:` tags in the SEO audit. |
-| `colors` / `fonts` | Locked seed — the design-data phase can only fill gaps, never override them. |
-| `logo` / `favicon` | Held fixed; never restyled. Wired into the page and the SEO audit. |
-| `voice` / `tone` | Drives the copy's wording and formality. |
-| `doNot` | Hard rules the build **and** the audit must respect. |
-
+| `name` / `url` | Fill `<title>`, canonical, and `og:` tags in the SEO audit. |
+| `colors` / `fonts` | Fixed seed — the data step can only fill gaps, never override them. |
+| `logo` / `favicon` | Kept as-is, never restyled. Wired into the page and the SEO audit. |
+| `voice` / `tone` | Set the copy's wording and formality. |
+| `doNot` | Hard rules the build **and** the audit must follow. |
 
 ---
 
-## The two audit gates (why output is trustworthy)
+## The two audit gates (why you can trust the output)
 
-Both are plain Node scripts — deterministic, zero-dependency, no LLM guessing.
-Each prints a JSON list of findings + a human summary, and exits non-zero if any
-`error`-level issue remains. The build treats an `error` as blocking.
+Both are plain Node scripts: fixed rules, no extra installs, no AI guessing. Each
+prints a JSON list of findings plus a short summary. Each exits non-zero if any
+`error`-level problem is left. During a build, an `error` blocks "done".
 
-| Gate | Catches (examples) | `error` = |
+| Gate | Catches (examples) | `error` means |
 |---|---|---|
-| `verify-composition` | horizontal overflow, unequal card heights, poor text-width use, low contrast | overflow, contrast below WCAG AA |
-| `verify-seo-perf` | missing `<title>`/`<h1>`/viewport, weak meta description, OpenGraph/Twitter cards, JSON-LD validity, render-blocking scripts, images without dimensions (CLS), fonts without `display=swap`, load weight/timing | missing title/`<h1>`/viewport/`og:image`, invalid JSON-LD, accidental `noindex` |
+| `verify-composition` | sideways overflow, uneven card heights, poor text width, low contrast | overflow, or contrast below WCAG AA |
+| `verify-seo-perf` | missing `<title>`/`<h1>`/viewport, weak meta description, OpenGraph/Twitter cards, JSON-LD validity, render-blocking scripts, images with no size (CLS), fonts without `display=swap`, page weight/timing | missing title/`<h1>`/viewport/`og:image`, broken JSON-LD, or accidental `noindex` |
 
-You can run either by hand on any page — great as a standalone linter:
+pixel-paule runs both for you at the end of every build. You don't have to type
+anything. But you *can* run either one by hand on any page, as a standalone linter:
 
 ```
 node plugin/skills/website/scripts/verify-seo-perf.mjs ./index.html
 node plugin/skills/website/scripts/verify-composition.mjs ./index.html -b 390,768,1280
 ```
 
-A local Chrome unlocks real runtime metrics (requests, bytes, load timing); both
-scripts degrade gracefully without it, and `verify-seo-perf --no-chrome` runs the
-full static pass anyway.
+A local Chrome adds real runtime numbers (requests, bytes, load time). Both scripts
+still work without it, and `verify-seo-perf --no-chrome` runs the full static check
+anyway.
 
 ---
 
 ## Install
-
-Works everywhere, including the VS Code / JetBrains extensions (where in-app
-`/plugin` is disabled):
 
 ```
 claude plugin marketplace add Panhas2209/pixel-paule
 claude plugin install pixel-paule@panhas2209
 ```
 
-Then reload your editor and verify with `claude plugin list`. Update later with
+Then reload your editor and check with `claude plugin list`. Update later with
 `claude plugin update pixel-paule@panhas2209`.
 
-Requirements: `node` and `python3` (both usually present). A browser/Playwright
-MCP is optional (better URL rebuilds + visual checks); a local Chrome/Chromium
-enables runtime performance metrics.
+You need `node` and `python3` (usually already there). A browser/Playwright MCP is
+optional (better URL rebuilds and visual checks). A local Chrome/Chromium turns on
+the runtime performance numbers.
 
 ## Power-user shortcuts
 
 | Want to… | Do this |
 |---|---|
 | Call a bundled specialist directly | `/pixel-paule:impeccable audit` |
-| Force a stack | add `--stack next\|astro\|vite\|svelte\|html` to your prompt |
+| Set a stack | add `--stack next\|astro\|vite\|svelte\|html` to your prompt |
 | Point at a specific brand file | add `brand=./config/brand.json` to your prompt |
 | Keep an existing brand on a redesign | add `--keep-brand` |
 
@@ -220,15 +239,15 @@ enables runtime performance metrics.
 
 ## Credits & licenses
 
-This plugin **vendors** the upstream skills; each keeps its own license (copies in
+This plugin **bundles** the upstream skills; each keeps its own license (copies in
 [`third_party/`](third_party), summarized in [`NOTICE`](NOTICE)): ui-ux-pro-max
 (MIT), emil-design-eng (MIT), impeccable (Apache-2.0). All credit for the design
-intelligence belongs to their authors. The orchestrator, both audit gates, the
-brand loader, and the tooling here are MIT. Original orchestrator scaffolding by
+smarts goes to their authors. The orchestrator, both audit gates, the brand loader,
+and the tooling here are MIT. Original orchestrator scaffolding by
 [Jarek2k/website-builder](https://github.com/Jarek2k/website-builder) (MIT).
 
 ---
 
 Maintaining, extending, or forking this plugin? See
 [`docs/maintaining.md`](docs/maintaining.md) for the upstream-sync automation, how
-to add/swap a skill, and how conflicts between the bundled builders are prevented.
+to add or swap a skill, and how conflicts between the bundled builders are prevented.
