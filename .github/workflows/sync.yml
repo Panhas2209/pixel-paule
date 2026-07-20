@@ -50,6 +50,9 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
           git add -A
+          # the default GITHUB_TOKEN may not push changes under .github/workflows/;
+          # the sync never needs to touch them, so keep them out of the commit.
+          git restore --staged --worktree .github/workflows 2>/dev/null || true
           git commit -m "chore: sync bundled skills from upstream"
           git push -u origin "$BRANCH"
           {
