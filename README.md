@@ -1,6 +1,6 @@
 # pixel-paule
 
-<img src="docs/logo.png" align="right" width="160" alt="pixel-paule logo">
+<img src="docs/logo.png" style="float: right; margin-left: 20px;" width="160" alt="pixel-paule logo">
 
 ## Type one sentence. Get one production-ready web page.
 
@@ -17,7 +17,7 @@ brand lock** and a **built-in SEO / meta / OpenGraph / performance audit**.
 ---
 
 
-<img src="docs/idea.png" align="right" width="100" style="background: white;" alt="the idea">
+<img src="docs/idea.png" width="100" style="float: right; margin-left: 20px;" alt="the idea">
 
 ## The idea in one minute
 
@@ -37,7 +37,7 @@ So you stay at the level of *intent* ("make it calmer", "keep our logo"). The pl
 
 ---
 
-<img src="docs/how.png" align="right" width="100" alt="how it works">
+<img src="docs/how.png" style="float: right; margin-left: 20px;" width="100" alt="how it works">
 
 ## How it works
 
@@ -61,7 +61,7 @@ projects — see [Credits](#credits--licenses) for the sources.
 
 ---
 
-<img src="docs/modes.png" align="right" width="100" alt="the three modes">
+<img src="docs/modes.png" style="float: right; margin-left: 20px;" width="100" alt="the three modes">
 
 ## The three modes (it picks for you)
 
@@ -75,7 +75,7 @@ You never name a mode. pixel-paule reads your input and chooses:
 
 ---
 
-<img src="docs/example.png" align="right" width="100" alt="example">
+<img src="docs/example.png" style="float: right; margin-left: 20px;" width="100" alt="example">
 
 ### A worked example
 
@@ -96,7 +96,7 @@ Here's what happens, so nothing surprises you:
 The point: **it confirms the direction before it builds**, so you don't lose five
 minutes to a wrong turn.
 
-<img src="docs/example.png" align="right" width="100" alt="example">
+<img src="docs/example.png" style="float: right; margin-left: 20px;" width="100" alt="example">
 
 ### More example prompts
 
@@ -116,7 +116,7 @@ minutes to a wrong turn.
 
 ---
 
-<img src="docs/stack.png" align="right" width="100" alt="tech stack">
+<img src="docs/stack.png" style="float: right; margin-left: 20px;" width="100" alt="tech stack">
 
 ## Tech stack — default and how to change it
 
@@ -141,7 +141,7 @@ reference data.
 
 ---
 
-<img src="docs/styles.png" align="right" width="100" alt="pick a look">
+<img src="docs/styles.png" style="float: right; margin-left: 20px;" width="100" alt="pick a look">
 
 ## Visual style — pick a look
 
@@ -168,7 +168,7 @@ Tip: you can also nudge the intensity in plain words — *"make it bolder"* or
 
 ---
 
-<img src="docs/brand.png" align="right" width="100" alt="brand">
+<img src="docs/brand.png" style="float: right; margin-left: 20px;" width="100" alt="brand">
 
 ## Brand input (optional, but powerful)
 
@@ -234,7 +234,7 @@ anyway.
 
 ---
 
-<img src="docs/install.png" align="right" style="margin-left: 40px" width="100" alt="install">
+<img src="docs/install.png" style="float: right; margin-left: 20px;" style="margin-left: 40px" width="100" alt="install">
 
 ## Install
 
