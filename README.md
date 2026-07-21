@@ -16,7 +16,8 @@ brand lock** and a **built-in SEO / meta / OpenGraph / performance audit**.
 
 ---
 
-<img src="docs/idea.png" align="right" width="100" alt="lightbulp">
+
+<img src="docs/idea.png" align="right" width="100" style="background: white;" alt="the idea">
 
 ## The idea in one minute
 
