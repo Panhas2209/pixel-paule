@@ -1,20 +1,22 @@
 # pixel-paule
 
-<img src="docs/logo.png" align="right" width="140" alt="pixel-paule logo — replace docs/logo.png with your own">
+<img src="docs/logo.png" align="right" width="160" alt="pixel-paule logo">
 
-**Type one sentence. Get one production-ready web page.**
+## Type one sentence. Get one production-ready web page.
 
-pixel-paule is a Claude Code plugin. You describe a page in plain words. It runs a
-full design studio for you — design system, hand-crafted build, motion, and a
+pixel-paule is a Claude Code plugin. **You describe a page in plain words. It runs a
+full design studio for you** — design system, hand-crafted build, motion, and a
 two-part audit (layout + SEO/OpenGraph/performance) — and gives you real,
 production-ready code. You never install, pick, or call a design skill yourself.
-You just talk; it does the rest.
+**You just talk; it does the rest.**
 
 It's an extended fork of [`website-builder`](https://github.com/Jarek2k/website-builder).
 It keeps everything good and adds the two things real sites need: an **optional
 brand lock** and a **built-in SEO / meta / OpenGraph / performance audit**.
 
 ---
+
+<img src="docs/idea.png" align="right" width="100" alt="lightbulp">
 
 ## The idea in one minute
 
@@ -30,10 +32,11 @@ pixel-paule fixes that with two ideas:
 | **One conversation partner, many specialists** | You talk to one skill (`website`). It calls three expert design skills plus its own checks. No skill-picking, no prompt-juggling. |
 | **"Done" is measured, not guessed** | Two scripts read the finished page and report problems as hard numbers. The build can't call itself done while a real `error` is still open. |
 
-So you stay at the level of *intent* ("make it calmer", "keep our logo"). The
-plugin handles the craft and the checklist underneath.
+So you stay at the level of *intent* ("make it calmer", "keep our logo"). The plugin handles the craft and the checklist underneath.
 
 ---
+
+<img src="docs/how.png" align="right" width="100" alt="how it works">
 
 ## How it works
 
@@ -56,6 +59,8 @@ The specialist skills are named by what they do (`website-build`, `website-ux`,
 projects — see [Credits](#credits--licenses) for the sources.
 
 ---
+
+<img src="docs/modes.png" align="right" width="100" alt="the three modes">
 
 ## The three modes (it picks for you)
 
@@ -104,6 +109,8 @@ minutes to a wrong turn.
 
 ---
 
+<img src="docs/stack.png" align="right" width="100" alt="tech stack">
+
 ## Tech stack — default and how to change it
 
 You don't have to name a stack. Say nothing and pixel-paule uses its default. To
@@ -126,6 +133,8 @@ A stack outside this list still works. You just don't get the extra stack-specif
 reference data.
 
 ---
+
+<img src="docs/styles.png" align="right" width="100" alt="pick a look">
 
 ## Visual style — pick a look
 
@@ -151,6 +160,8 @@ Tip: you can also nudge the intensity in plain words — *"make it bolder"* or
 *"keep it calmer"* — and pixel-paule adjusts without you naming a style.
 
 ---
+
+<img src="docs/brand.png" align="right" width="100" alt="brand">
 
 ## Brand input (optional, but powerful)
 
@@ -216,6 +227,8 @@ anyway.
 
 ---
 
+<img src="docs/install.png" align="right" style="margin-left: 40px" width="100" alt="install">
+
 ## Install
 
 ```
@@ -256,3 +269,4 @@ and the tooling here are MIT. Original orchestrator scaffolding by
 Maintaining, extending, or forking this plugin? See
 [`docs/maintaining.md`](docs/maintaining.md) for the upstream-sync automation, how
 to add or swap a skill, and how conflicts between the bundled builders are prevented.
+v
