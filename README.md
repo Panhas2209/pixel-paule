@@ -72,6 +72,10 @@ You never name a mode. pixel-paule reads your input and chooses:
 | A URL or an existing site | **From reference** | Reads the reference, then either rebuilds it closely *or* redesigns it while keeping the brand. |
 | A file or project path | **Improve** | Checks the page, fixes problems in place, audits again. Won't change your identity unless you ask. |
 
+---
+
+<img src="docs/example.png" align="right" width="100" alt="example">
+
 ### A worked example
 
 You type:
@@ -90,6 +94,8 @@ Here's what happens, so nothing surprises you:
 
 The point: **it confirms the direction before it builds**, so you don't lose five
 minutes to a wrong turn.
+
+<img src="docs/example.png" align="right" width="100" alt="example">
 
 ### More example prompts
 
