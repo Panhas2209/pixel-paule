@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Inaccessible page — many failures</title>
+</head>
+<body>
+  <h1>Landing</h1>
+  <h3>Skipped a level</h3>
+  <h2></h2>
+
+  <!-- empty link: error -->
+  <a href="/cart"></a>
+  <!-- icon link, no accessible name: error -->
+  <a href="/search"><svg width="16" height="16"><path d="M0 0"/></svg></a>
+
+  <!-- empty button: error -->
+  <button></button>
+
+  <!-- image submit without alt: error -->
+  <form>
+    <input type="image" src="/go.png">
+    <!-- unlabeled text input: warn -->
+    <input type="text" id="q" name="q">
+  </form>
+
+  <!-- invalid role + misspelled aria attr: warn each -->
+  <div role="buton" aria-labeledby="x">Widget</div>
+
+  <!-- positive tabindex: warn -->
+  <span tabindex="5">Focus me first</span>
+
+  <!-- duplicate id: warn -->
+  <section id="dup"></section>
+  <section id="dup"></section>
+
+  <!-- iframe without title: warn -->
+  <iframe src="/embed"></iframe>
+</body>
+</html>

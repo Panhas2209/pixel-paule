@@ -33,6 +33,7 @@ Design · Build · Animate · Verify — all from a single conversation.
 | 🔍 **SEO / social QA** | Validates meta, OpenGraph and structured data |
 | 🖼️ **Asset QA** | Verifies images actually made it into the build |
 | ⚡ **Performance QA** | Checks page weight, assets and load timing |
+| ♿ **Accessibility QA** | Checks names, ARIA, zoom and keyboard order (WCAG 2.2) |
 
 ---
 
@@ -46,7 +47,7 @@ Design · Build · Animate · Verify — all from a single conversation.
 - [Visual styles](#visual-styles)
 - [Tech stack](#tech-stack)
 - [Brand input](#brand-input-optional-but-powerful)
-- [The two audit gates](#the-two-audit-gates)
+- [The three audit gates](#the-three-audit-gates)
 - [Install](#install)
 - [Power-user shortcuts](#power-user-shortcuts)
 - [FAQ](#faq)
@@ -115,7 +116,7 @@ the right specialist for each step and passes the work along, so no two builders
 the same job.
 
 ```text
-Prompt → Plan (you confirm) → Data → Build → Motion → Layout QA → SEO/Perf QA → Done
+Prompt → Plan (you confirm) → Data → Build → Motion → Layout QA → SEO/Perf QA → A11y QA → Done
 ```
 
 | Step | Who does it | What comes out |
@@ -126,6 +127,7 @@ Prompt → Plan (you confirm) → Data → Build → Motion → Layout QA → SE
 | 3 · Motion | `website-animation` + `website-animation-review` | Small interactions on the moving parts, then a motion review. |
 | 4 · Audit (layout) | `verify-composition` | Blocking check: overflow, uneven heights, width use, contrast — with numbers. |
 | 4b · Audit (findability) | `verify-seo-perf` | Blocking check: SEO, meta, OpenGraph, structured data, asset parity (images really shipped), load performance. |
+| 4c · Audit (accessibility) | `verify-a11y` | Blocking check: accessible names, ARIA validity, zoom, heading order, landmarks, keyboard focus order — WCAG 2.2 AA. |
 
 Only `website` reacts to your request; it pulls in each specialist when needed. The
 specialists are named by what they do and bundled from upstream projects — see
@@ -285,30 +287,34 @@ explicit path beats an auto-discovered file, which beats `--keep-brand` + free t
 
 ---
 
-## The two audit gates
+## The three audit gates
 
-Both are plain Node scripts: fixed rules, no extra installs, no AI guessing. Each
+All three are plain Node scripts: fixed rules, no extra installs, no AI guessing. Each
 prints a JSON list of findings plus a short summary, and exits non-zero if any
-`error`-level problem is left. During a build, an `error` blocks "done".
+`error`-level problem is left. During a build, an `error` blocks "done". They're
+**non-overlapping** — each owns its lane, so running all three gives full coverage
+without duplicate findings.
 
 | Gate | Catches (examples) | An `error` means |
 |---|---|---|
 | `verify-composition` | sideways overflow, uneven card heights, poor text width, low contrast | overflow, or contrast below WCAG AA |
 | `verify-seo-perf` | missing `<title>`/`<h1>`/viewport, weak meta description, OpenGraph/Twitter cards, JSON-LD validity, empty/broken image references, assets still hotlinked instead of self-hosted, render-blocking scripts, images with no size (CLS), fonts without `display=swap`, page weight/timing | missing title/`<h1>`/viewport/`og:image`, broken JSON-LD, an empty or dead local image reference, or accidental `noindex` |
+| `verify-a11y` | controls with no accessible name, empty/icon-only links & buttons, disabled zoom, invalid ARIA roles/attributes, `aria-hidden` on focusable nodes, positive `tabindex`, broken heading order, missing/duplicate `<main>`, untitled `<iframe>`, duplicate ids | empty link/button, disabled pinch-zoom, an image button with no alt, or (with Chrome) an interactive element with an empty accessible name |
 
 **Exit codes:** `0` clean · `1` at least one `error` left · `2` target unreadable.
 
-pixel-paule runs both at the end of every build automatically. You *can* also run
-either one by hand on any page, as a standalone linter:
+pixel-paule runs all three at the end of every build automatically. You *can* also run
+any one by hand on any page, as a standalone linter:
 
 ```bash
 node plugin/skills/website/scripts/verify-seo-perf.mjs ./index.html
 node plugin/skills/website/scripts/verify-composition.mjs ./index.html -b 390,768,1280
+node plugin/skills/website/scripts/verify-a11y.mjs ./index.html
 ```
 
-A local Chrome adds real runtime numbers (requests, bytes, load time). Both scripts
-still work without it, and `verify-seo-perf --no-chrome` runs the full static check
-anyway.
+A local Chrome adds real runtime numbers (requests, bytes, load time) and, for
+`verify-a11y`, the real accessibility tree. All three scripts still work without it,
+and `--no-chrome` runs the full static check anyway.
 
 ---
 
@@ -385,8 +391,8 @@ whole pipeline — not just a suggestion.
 <details>
 <summary><strong>Can I run only the quality checks?</strong></summary>
 
-Yes. `verify-seo-perf` and `verify-composition` run standalone on any page (see
-[the audit gates](#the-two-audit-gates)) without rebuilding it.
+Yes. `verify-seo-perf`, `verify-composition` and `verify-a11y` run standalone on any
+page (see [the audit gates](#the-three-audit-gates)) without rebuilding it.
 </details>
 
 <details>

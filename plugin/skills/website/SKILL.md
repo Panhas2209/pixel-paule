@@ -38,6 +38,7 @@ specialist. Respect those lanes.
 | Motion QA gate | `website-animation-review` | read `$PR/skills/website-animation-review/SKILL.md` and apply to the motion you added |
 | Composition audit gate | `verify-composition` (first-party) | `node "$PR/skills/website/scripts/verify-composition.mjs" <file-or-url> --breakpoints 390,768,1280` |
 | SEO / meta / OpenGraph / performance audit gate | `verify-seo-perf` (first-party) | `node "$PR/skills/website/scripts/verify-seo-perf.mjs" <file-or-url>` |
+| Accessibility (WCAG 2.2 AA) audit gate | `verify-a11y` (first-party) | `node "$PR/skills/website/scripts/verify-a11y.mjs" <file-or-url>` |
 | Optional brand constraint | `load-brand` (first-party) | `node "$PR/skills/website/scripts/load-brand.mjs" [path]` — see `reference/brand-input.md` |
 
 **How you "use" a specialist:** these skills are bundled as a knowledge + script library. Load one by
@@ -170,6 +171,24 @@ justify it in one sentence**, then re-run until clean or justified. `warn`/`info
 favicon/logo are wired up. Runs offline: with `--no-chrome` it does the full static pass and skips runtime
 metrics gracefully.
 
+**A4c · Accessibility (WCAG 2.2 AA) audit — also blocking.** A page that looks great but locks out keyboard
+and screen-reader users is not done. Run the third deterministic gate:
+```bash
+node "$PR/skills/website/scripts/verify-a11y.mjs" <built-file-or-local-URL>
+```
+It prints the same `{rule, category, severity, context, measured, expected, note}` shape, all
+`category:"a11y"`. **This gate is deliberately non-overlapping** with the other two — it does **not** re-check
+colour contrast (that's `verify-composition` Rule 4) or `<img alt>` / `<html lang>` (that's `verify-seo-perf`).
+What it owns: controls with no accessible name, empty links/buttons (icon-only without `aria-label`),
+`user-scalable=no`/`maximum-scale<2` (disabled zoom), invalid ARIA roles/attributes, `aria-hidden` on
+focusable nodes, positive `tabindex`, broken heading order, empty headings, missing/duplicate `<main>`,
+untitled `<iframe>`, and duplicate `id`s. If Chrome is available it also reads the **real accessibility tree**
+and turns interactive nodes with an empty accessible name into a hard `ax-empty-name` error (this catches
+wrapped labels and dynamic content the static pass reports only as a `warn`). Treat every `severity:"error"`
+(empty link/button, disabled zoom, image-input without alt, `ax-empty-name`) as blocking — **fix it or justify
+it in one sentence** — then re-run until clean or justified. `warn`/`info` are strong nudges, not gates. Runs
+offline: `--no-chrome` does the full static pass and skips the accessibility-tree pass gracefully.
+
 ---
 
 ## Mode B — Rebuild / redesign from a URL or reference
@@ -224,7 +243,7 @@ name it as one.
   everything else. In the A0 discovery, only ask what the reference didn't already answer. If a **brand file**
   was loaded in Step 0b, it takes precedence over what B1 extracted; the extraction fills only the gaps.
 
-**B3 · Finish.** Motion (A3 + A3b) and audit (A4 composition + A4b SEO/perf) exactly as in Mode A. **Also
+**B3 · Finish.** Motion (A3 + A3b) and audit (A4 composition + A4b SEO/perf + A4c a11y) exactly as in Mode A. **Also
 verify asset parity from B0b:** no broken or empty `<img>`/background references, no leftover absolute
 source-origin URLs (everything self-hosted), and no unfetched placeholder that wasn't explicitly flagged in
 the B0b manifest report.
@@ -267,6 +286,13 @@ node "$PR/skills/website/scripts/verify-seo-perf.mjs" <file-or-local-URL>
 Fold its findings into C1's diagnosis and fix/justify every `error` before "done". Don't add SEO tags the page
 legitimately shouldn't have (e.g. a canonical for a fragment) — justify skips in one line.
 
+**And run the a11y gate** on the improved file (same as A4c) — an "improve" pass is the natural place to catch
+an unlabeled control, an icon button with no `aria-label`, disabled zoom, or a broken heading order:
+```bash
+node "$PR/skills/website/scripts/verify-a11y.mjs" <file-or-local-URL>
+```
+Fold its findings into C1's diagnosis and fix/justify every `error` before "done".
+
 ---
 
 ## Cross-cutting rules (all modes)
@@ -275,10 +301,11 @@ legitimately shouldn't have (e.g. a canonical for a fragment) — justify skips 
   Never run both as builders on the same surface — that's the conflict this plugin exists to prevent.
 - **Hand-off contract.** Each phase receives the previous phase's concrete file paths + the design tokens.
   Never re-run an earlier generative phase.
-- **Verify by measuring, then looking.** Before saying "done", run **both** blocking gates —
-  `verify-composition.mjs` (layout, A4) and `verify-seo-perf.mjs` (SEO/meta/OpenGraph/performance, A4b) —
-  and clear or justify every `error`, **then** render and read a screenshot at mobile + desktop. Numbers
-  catch what the eye misses; a screenshot you didn't read doesn't count.
+- **Verify by measuring, then looking.** Before saying "done", run **all three** blocking gates —
+  `verify-composition.mjs` (layout, A4), `verify-seo-perf.mjs` (SEO/meta/OpenGraph/assets/performance, A4b),
+  and `verify-a11y.mjs` (accessibility / WCAG 2.2 AA, A4c) — and clear or justify every `error`, **then**
+  render and read a screenshot at mobile + desktop. Numbers catch what the eye misses; a screenshot you
+  didn't read doesn't count.
 - **Brand wins over taste.** When Step 0b loaded a brand file, its tokens and `doNot` list override any
   design-data candidate or taste call. When there's no brand, derive identity as the base pipeline does.
 - **Match the project.** In an existing repo, use its framework, components, icon set, and conventions;

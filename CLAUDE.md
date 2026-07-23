@@ -68,20 +68,21 @@ set `disable-model-invocation: true` so they never compete with the orchestrator
 ## First-party scripts (the audit gates + brand loader)
 
 Under `plugin/skills/website/scripts/`. All **zero-dependency Node** (Node 18+),
-deterministic, no LLM. The `website` orchestrator runs the two gates automatically
+deterministic, no LLM. The `website` orchestrator runs the three gates automatically
 at the end of every build; you can also run them by hand.
 
 | Script | Purpose | Run |
 |---|---|---|
 | `verify-composition.mjs` | Layout audit: overflow, unequal heights, width use, contrast. Renders via system Chrome (CDP). | `node …/verify-composition.mjs <file-or-url> -b 390,768,1280` |
 | `verify-seo-perf.mjs` | SEO / meta / OpenGraph / structured-data / **asset-parity** / performance audit. Static pass needs no browser; optional Chrome pass adds runtime metrics. | `node …/verify-seo-perf.mjs <file-or-url> [--no-chrome] [--json]` |
+| `verify-a11y.mjs` | Accessibility audit (WCAG 2.2 AA): accessible names, empty links/buttons, disabled zoom, invalid ARIA, heading order, landmarks, tabindex, iframe titles, duplicate ids. **Non-overlapping** — contrast stays in `verify-composition`, `alt`/`lang` in `verify-seo-perf`. Static pass needs no browser; optional Chrome pass reads the real accessibility tree. | `node …/verify-a11y.mjs <file-or-url> [--no-chrome] [--json]` |
 | `load-brand.mjs` | Discover/parse/validate the optional brand file. | `node …/load-brand.mjs [path]` |
 
-**Exit codes (both audits):** `0` clean · `1` at least one `error`-severity finding · `2` target unreadable.
+**Exit codes (all three audits):** `0` clean · `1` at least one `error`-severity finding · `2` target unreadable.
 `error` blocks "done"; `warn`/`info` are advisory. Without Chrome the scripts degrade gracefully.
 
 **Tests** (zero-dependency, `node:test`): `node --test 'plugin/skills/website/scripts/test/*.test.mjs'`
-The `verify-seo-perf` tests run fully offline; the `verify-composition` tests skip cleanly when no Chrome is present.
+The `verify-seo-perf` and `verify-a11y` tests run fully offline; the `verify-composition` tests skip cleanly when no Chrome is present.
 
 ## The orchestrator pipeline (`website`)
 
@@ -93,7 +94,7 @@ Defined in `plugin/skills/website/SKILL.md`. Key behaviors:
   becomes a hard constraint through all phases (brand wins over taste).
 - **Pipeline:** shape/confirm → data (`website-ux`) → build (`website-build`) →
   motion (`website-animation` + `website-animation-review`) → audits
-  (`verify-composition` + `verify-seo-perf`). It confirms the plan before building.
+  (`verify-composition` + `verify-seo-perf` + `verify-a11y`). It confirms the plan before building.
 - **Flags are typed inside the prompt** (not separate commands): `--keep-brand`,
   `--stack next|astro|vite|svelte|html`, `brand=./path.json`.
 - **Default tech stack** = Next.js + Tailwind + shadcn/ui, set in `SKILL.md` step
@@ -154,7 +155,7 @@ opens a **PR** with any upstream bumps; nothing lands unreviewed.
 
 | Task | How |
 |---|---|
-| Run the audits by hand | `node plugin/skills/website/scripts/verify-seo-perf.mjs ./index.html` (and `verify-composition.mjs … -b 390,768,1280`) |
+| Run the audits by hand | `node plugin/skills/website/scripts/verify-seo-perf.mjs ./index.html` (and `verify-composition.mjs … -b 390,768,1280`, and `verify-a11y.mjs ./index.html`) |
 | Run tests | `node --test 'plugin/skills/website/scripts/test/*.test.mjs'` |
 | Re-vendor / update bundled skills | edit `upstreams.json` → `bash scripts/sync-upstreams.sh` (add `--bump` to bump version) |
 | Add / swap / remove a bundled skill | edit one entry in `upstreams.json` (repo, ref, sourceSubpath, target, license, frontmatterSet, pathRewrites) → run the sync |

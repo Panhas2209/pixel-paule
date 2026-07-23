@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Accessible page — nothing to flag</title>
+</head>
+<body>
+  <a href="#main" class="skip">Skip to content</a>
+  <header><nav aria-label="Primary"><a href="/">Home</a></nav></header>
+  <main id="main">
+    <h1>Precision manufacturing</h1>
+    <h2>What we build</h2>
+    <p>Real content here.</p>
+    <form>
+      <label for="email">Email address</label>
+      <input type="email" id="email" name="email">
+      <button type="submit">Subscribe</button>
+    </form>
+    <a href="/about">About us</a>
+    <button type="button" aria-label="Close dialog">
+      <svg width="16" height="16" aria-hidden="true"><path d="M0 0"/></svg>
+    </button>
+    <iframe title="Location map" src="/map"></iframe>
+  </main>
+  <footer><p>© Acme</p></footer>
+</body>
+</html>
