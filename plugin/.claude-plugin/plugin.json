@@ -1,6 +1,6 @@
 {
   "name": "pixel-paule",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "One-command website builder. Orchestrates design-system data (ui-ux-pro-max), a taste-driven anti-slop build + audit (impeccable), and motion craft (emil-design-eng). Adds an OPTIONAL brand-input constraint and a deterministic SEO / meta / OpenGraph / performance audit gate. Three modes: build new from a brief, rebuild/redesign from a URL or reference, or audit & improve an existing page.",
   "author": {
     "name": "Panhas2209",

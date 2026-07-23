@@ -14,6 +14,9 @@
  *   opengraph       — og:title / og:description / og:image / og:type / og:url
  *   twitter         — twitter:card / title / description / image
  *   structured-data — JSON-LD present + valid JSON
+ *   assets          — image/media parity: empty <img> src, local references
+ *                     that resolve to no file on disk, assets still hotlinked
+ *                     to a remote origin instead of self-hosted (local target)
  *   performance     — render-blocking head scripts, images without width/height
  *                     (CLS), missing lazy-loading, @import, oversized inline
  *                     blocks, huge data: URIs, fonts without display=swap,
@@ -129,6 +132,36 @@ function metaContent(metas, key) {
   return null;
 }
 
+/** Classify an asset URL for the parity check. */
+function classifyUrl(u) {
+  const s = (u || '').trim();
+  if (!s) return 'empty';
+  if (/^data:/i.test(s)) return 'data';
+  if (/^(https?:)?\/\//i.test(s)) return 'external'; // absolute or protocol-relative //host
+  if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return 'scheme'; // mailto:, blob:, tel: … — not a file
+  if (s.startsWith('#')) return 'anchor';
+  return 'local'; // relative (./ ../ foo) or root-relative (/foo)
+}
+
+/** Split a srcset attribute into its candidate URLs (drop the density/width descriptor). */
+function srcsetUrls(v) {
+  return (v || '')
+    .split(',')
+    .map((s) => s.trim().split(/\s+/)[0])
+    .filter(Boolean);
+}
+
+/** Resolve a local asset URL to an absolute disk path, relative to the document's dir. */
+function localAssetPath(u, dir) {
+  let p = u.trim().split('#')[0].split('?')[0];
+  if (p.startsWith('/')) p = '.' + p; // best-effort: treat the document's dir as the web root
+  try {
+    return decodeURIComponent(p) && path.resolve(dir, decodeURIComponent(p));
+  } catch {
+    return path.resolve(dir, p);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Static analysis — the heart of the checker.
 // ---------------------------------------------------------------------------
@@ -228,6 +261,66 @@ function analyseHtml(rawHtml, ctx) {
       add('structured-data-invalid', 'structured-data', 'error', `JSON-LD #${i + 1}`, 'invalid JSON', 'valid JSON', `JSON-LD block fails to parse: ${e.message}`);
     }
   });
+
+  // ---- Assets (parity + self-hosting) ---------------------------------
+  // Deterministic guard against the classic rebuild failure: images that were
+  // never migrated. Catches empty <img>, references to a local file that isn't
+  // on disk, and (for a local build) assets still hotlinked to a remote origin.
+  // It cannot know how many images the *source* had — pair with the B0b manifest.
+  const imgsBlank = imgs.filter((i) => (i.attrs.src ?? '').trim() === '' && (i.attrs.srcset ?? '').trim() === '');
+  if (imgsBlank.length > 0)
+    add('img-src-empty', 'assets', 'error', '<img>', `${imgsBlank.length}/${imgs.length} images`, 'every <img> has a real src/srcset', 'Image tags with no src/srcset render nothing — a hollow rebuild that dropped its media.');
+
+  if (ctx.isLocal && ctx.dir) {
+    const refs = [];
+    for (const i of imgs) {
+      if (i.attrs.src) refs.push(i.attrs.src);
+      for (const u of srcsetUrls(i.attrs.srcset)) refs.push(u);
+    }
+    for (const s of findTags(html, 'source')) {
+      if (s.attrs.src) refs.push(s.attrs.src);
+      for (const u of srcsetUrls(s.attrs.srcset)) refs.push(u);
+    }
+    for (const l of links) if ((l.attrs.rel || '').toLowerCase().includes('icon') && l.attrs.href) refs.push(l.attrs.href);
+    for (const m of html.matchAll(/url\(\s*(['"]?)([^'")]+)\1\s*\)/gi)) refs.push(m[2]);
+
+    const brokenRel = [];
+    const brokenRooted = [];
+    const externalHosts = new Set();
+    let externalCount = 0;
+    for (const ref of refs) {
+      const kind = classifyUrl(ref);
+      if (kind === 'external') {
+        externalCount += 1;
+        try {
+          externalHosts.add(new URL(ref.trim().startsWith('//') ? 'https:' + ref.trim() : ref.trim()).host);
+        } catch {
+          /* ignore unparseable */
+        }
+      } else if (kind === 'local') {
+        const abs = localAssetPath(ref, ctx.dir);
+        let ok = false;
+        try {
+          ok = fs.existsSync(abs);
+        } catch {
+          /* ignore */
+        }
+        if (!ok) (ref.trim().startsWith('/') ? brokenRooted : brokenRel).push(ref.trim());
+      }
+    }
+    if (brokenRel.length > 0) {
+      const sample = brokenRel.slice(0, 5).join(', ');
+      add('asset-broken-local', 'assets', 'error', 'local asset', `${brokenRel.length} missing file(s)`, 'referenced file exists on disk', `Relative asset reference(s) resolve to no file: ${sample}${brokenRel.length > 5 ? ' …' : ''}. A placeholder path or an image that was never migrated.`);
+    }
+    if (brokenRooted.length > 0) {
+      const sample = brokenRooted.slice(0, 5).join(', ');
+      add('asset-broken-rooted', 'assets', 'warn', 'local asset', `${brokenRooted.length} unresolved root-relative ref(s)`, 'file exists under the web root', `Root-relative asset(s) not found under the document's dir: ${sample}${brokenRooted.length > 5 ? ' …' : ''}. Confirm the web root, or that the file was migrated.`);
+    }
+    if (externalCount > 0) {
+      const hosts = [...externalHosts].slice(0, 5).join(', ');
+      add('asset-external-host', 'assets', 'warn', 'remote asset', `${externalCount} hotlinked ref(s)`, 'self-hosted local asset', `Images/CSS assets still hotlinked to a remote origin (${hosts || 'external'}). On a rebuild these should be downloaded and self-hosted (Mode B step B0b), or the page breaks when the source disappears.`);
+    }
+  }
 
   // ---- Performance (static heuristics) --------------------------------
   const blocking = findTags(head, 'script').filter((s) => s.attrs.src && !('defer' in s.attrs) && !('async' in s.attrs) && (s.attrs.type || '').toLowerCase() !== 'module');
@@ -519,11 +612,11 @@ async function loadHtml(target) {
   if (isUrl(target)) {
     const res = await fetch(target, { redirect: 'follow' });
     if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${target}`);
-    return { html: await res.text(), url: target };
+    return { html: await res.text(), url: target, isLocal: false, dir: null };
   }
   const abs = path.resolve(target);
   if (!fs.existsSync(abs)) throw new Error(`File not found: ${abs}`);
-  return { html: fs.readFileSync(abs, 'utf8'), url: pathToFileURL(abs).href };
+  return { html: fs.readFileSync(abs, 'utf8'), url: pathToFileURL(abs).href, isLocal: true, dir: path.dirname(abs) };
 }
 
 function printSummary(target, findings) {
@@ -563,7 +656,7 @@ async function main() {
     return degrade(`could not read target: ${e.message}`, e.message);
   }
 
-  const findings = analyseHtml(loaded.html, { url: loaded.url });
+  const findings = analyseHtml(loaded.html, { url: loaded.url, isLocal: loaded.isLocal, dir: loaded.dir });
 
   if (opts.chrome) {
     const chrome = findChrome();

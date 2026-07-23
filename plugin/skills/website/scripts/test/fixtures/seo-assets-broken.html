@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Asset parity — rebuild that dropped its media</title>
+  <meta name="description" content="A fixture whose only problems are asset-parity ones: a broken relative image, an empty src, a hotlinked remote image, and a missing CSS background.">
+  <link rel="canonical" href="https://acme.example/">
+  <link rel="icon" href="/favicon.ico">
+  <meta property="og:title" content="Asset parity fixture">
+  <meta property="og:description" content="Only asset-parity findings should be errors here.">
+  <meta property="og:image" content="https://acme.example/og.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://acme.example/">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Acme"}</script>
+  <style>.hero { background-image: url(./bg-missing.png); }</style>
+</head>
+<body>
+  <h1>Rebuild that dropped its media</h1>
+  <!-- present relative asset: must NOT be flagged -->
+  <img src="./asset-present.svg" alt="Present" width="4" height="4">
+  <!-- broken relative asset: error -->
+  <img src="./missing.png" alt="Missing" width="10" height="10">
+  <!-- empty src: error -->
+  <img src="" alt="Empty" width="10" height="10">
+  <!-- hotlinked remote asset: warn -->
+  <img src="https://cdn.example.com/remote.jpg" alt="Remote" width="10" height="10">
+</body>
+</html>

@@ -155,9 +155,12 @@ and that previews as a bare link is not done. Run the second deterministic gate:
 node "$PR/skills/website/scripts/verify-seo-perf.mjs" <built-file-or-local-URL>
 ```
 It prints a JSON array of findings (`{rule, category, severity, context, measured, expected, note}`) across
-five categories — **seo** (title, meta description, single `<h1>`, `<html lang>`, charset, viewport,
+six categories — **seo** (title, meta description, single `<h1>`, `<html lang>`, charset, viewport,
 canonical, robots, image alt, favicon), **opengraph** (og:title/description/**image**/type/url), **twitter**
-(card + fallbacks), **structured-data** (JSON-LD present + parses), and **performance** (render-blocking head
+(card + fallbacks), **structured-data** (JSON-LD present + parses), **assets** (image/media parity — empty
+`<img>` src, local references that resolve to no file on disk → **error**; assets still hotlinked to a
+remote origin instead of self-hosted → warn; this is the deterministic backstop for the Mode B B0b
+migration), and **performance** (render-blocking head
 scripts, images without width/height → CLS, missing lazy-loading, `@import`, oversized inline blocks, large
 data: URIs, fonts without preconnect / `display=swap`, document size). If Chrome is available it adds real
 runtime metrics (request count, transferred bytes, DOMContentLoaded, load). Treat every `severity:"error"`
@@ -173,7 +176,42 @@ metrics gracefully.
 
 **B0 · Intake the reference.** Fetch the page with WebFetch (structure + copy). If a browser/screenshot
 tool is available, capture a screenshot for visual fidelity; otherwise proceed from HTML/CSS and say so.
-Download the brand assets to preserve — **logo**, brand colors, fonts.
+Save the raw HTML (and any linked CSS) so B0b can enumerate assets from the actual markup, not from the
+text-only WebFetch conversion.
+
+**B0b · Migrate assets — download and self-host (do NOT skip; this is where rebuilds silently lose images).**
+WebFetch returns text only and never carries image binaries, so a rebuild starts with **zero media** unless
+you fetch it explicitly. Build an asset manifest from the saved raw HTML/CSS, download every referenced file,
+store it under the project's static dir (`public/` for html/vite/astro/svelte/next), and rewrite every
+reference to the local path.
+
+Enumerate **every** asset source, not just `<img src>`:
+- `<img src>` and `srcset` (every density/width candidate) · `<picture>` → `<source srcset>`
+- `<video poster>`, `<source src>`, inline `<video>`/`<audio>`
+- CSS `background-image: url(...)` and `image-set(...)` — in `<style>`, `style=` attrs, and linked stylesheets
+- `<link rel="icon">` / `apple-touch-icon`, `og:image`, `twitter:image`
+- SVG `<use href>` / `<image href>`, and the **logo**
+
+```bash
+# From the saved source — list candidate asset URLs, then resolve + download each
+grep -oiE '(src|href|poster)="[^"]+\.(png|jpe?g|webp|avif|gif|svg|ico|mp4|webm)"' source.html
+grep -oiE 'url\((["'\'']?)[^)]+\.(png|jpe?g|webp|avif|gif|svg)\1\)' source.html source.css
+```
+
+Resolve every **relative** URL against the reference origin before downloading. Preserve the original
+filename/dir where sensible; give hashed or query-string URLs a stable local name. **Never hotlink** the
+source's URLs in the final build — self-host so the page survives the source disappearing and leaks no
+referrers. Prefer a browser/screenshot tool for auth- or CDN-gated assets; fall back to fetching the URLs.
+
+**Honor B2 intent for content images:**
+- **Faithful rebuild** → migrate everything: logo, content photos, decorative imagery, icons.
+- **Redesign, keep brand** → always migrate the irreplaceable (logo, real photography — product/team/location
+  shots, anything the user cannot regenerate). Decorative/stock/gradient filler the new design replaces may be
+  dropped — **name what you dropped and why; never silently omit brand-critical media.**
+
+Report the manifest: `N found → M downloaded → K rewritten`, and list anything you could **not** fetch
+(403 / hotlink-protected / behind auth) so the user can supply it. A placeholder is acceptable only if you
+name it as one.
 
 **B1 · Extract — website-build.** Read `$PR/skills/website-build/SKILL.md` + `reference/extract.md` (and
 `document.md`) to capture the reference's design tokens, structure, and brand into a usable system.
@@ -186,7 +224,10 @@ Download the brand assets to preserve — **logo**, brand colors, fonts.
   everything else. In the A0 discovery, only ask what the reference didn't already answer. If a **brand file**
   was loaded in Step 0b, it takes precedence over what B1 extracted; the extraction fills only the gaps.
 
-**B3 · Finish.** Motion (A3 + A3b) and audit (A4 composition + A4b SEO/perf) exactly as in Mode A.
+**B3 · Finish.** Motion (A3 + A3b) and audit (A4 composition + A4b SEO/perf) exactly as in Mode A. **Also
+verify asset parity from B0b:** no broken or empty `<img>`/background references, no leftover absolute
+source-origin URLs (everything self-hosted), and no unfetched placeholder that wasn't explicitly flagged in
+the B0b manifest report.
 
 ---
 

@@ -80,3 +80,39 @@ test('clean page: OpenGraph + structured data complete → none of those finding
   assert.ok(!has(findings, 'structured-data-missing'), 'JSON-LD present');
   assert.ok(!has(findings, 'title-missing'));
 });
+
+test('asset parity: broken relative asset + empty src are blocking errors, exit 1', () => {
+  const { code, findings } = run('seo-assets-broken.html');
+  const empty = findings.find((f) => f.rule === 'img-src-empty');
+  assert.ok(empty, 'empty <img> src should be flagged');
+  assert.equal(empty.severity, 'error');
+
+  const broken = findings.find((f) => f.rule === 'asset-broken-local');
+  assert.ok(broken, 'broken relative asset should be flagged');
+  assert.equal(broken.severity, 'error');
+  // ./missing.png + url(./bg-missing.png) = 2; ./asset-present.svg is excluded.
+  assert.equal(broken.measured, '2 missing file(s)', `present asset must not be counted: ${broken.measured}`);
+
+  assert.equal(code, 1, 'asset-parity errors must exit non-zero');
+});
+
+test('asset parity: hotlinked remote asset is a warn, not a blocking error', () => {
+  const { findings } = run('seo-assets-broken.html');
+  const ext = findings.find((f) => f.rule === 'asset-external-host');
+  assert.ok(ext, 'remote-hosted asset should be flagged');
+  assert.equal(ext.severity, 'warn');
+});
+
+test('asset parity: existing relative asset is not flagged as broken', () => {
+  const { findings } = run('seo-assets-broken.html');
+  const broken = findings.find((f) => f.rule === 'asset-broken-local');
+  assert.ok(broken && !broken.note.includes('asset-present.svg'), 'present asset must not appear in the broken list');
+});
+
+test('asset parity: root-relative missing asset degrades to warn (web root unknown)', () => {
+  const { findings } = run('seo-clean.html');
+  const rooted = findings.find((f) => f.rule === 'asset-broken-rooted');
+  assert.ok(rooted, 'root-relative missing files should be reported');
+  assert.equal(rooted.severity, 'warn');
+  assert.ok(!has(findings.filter((f) => f.severity === 'error'), 'asset-broken-rooted'), 'root-relative must never be an error');
+});

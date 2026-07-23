@@ -31,6 +31,7 @@ Design · Build · Animate · Verify — all from a single conversation.
 | ⚙️ **Multi-stack** | Next.js, Astro, React, Vue, Svelte + more |
 | 📐 **Layout QA** | Measures overflow, heights, width, contrast |
 | 🔍 **SEO / social QA** | Validates meta, OpenGraph and structured data |
+| 🖼️ **Asset QA** | Verifies images actually made it into the build |
 | ⚡ **Performance QA** | Checks page weight, assets and load timing |
 
 ---
@@ -124,7 +125,7 @@ Prompt → Plan (you confirm) → Data → Build → Motion → Layout QA → SE
 | 2 · Build | `website-build` | The real page: hand-crafted, non-generic, production-ready code. |
 | 3 · Motion | `website-animation` + `website-animation-review` | Small interactions on the moving parts, then a motion review. |
 | 4 · Audit (layout) | `verify-composition` | Blocking check: overflow, uneven heights, width use, contrast — with numbers. |
-| 4b · Audit (findability) | `verify-seo-perf` | Blocking check: SEO, meta, OpenGraph, structured data, load performance. |
+| 4b · Audit (findability) | `verify-seo-perf` | Blocking check: SEO, meta, OpenGraph, structured data, asset parity (images really shipped), load performance. |
 
 Only `website` reacts to your request; it pulls in each specialist when needed. The
 specialists are named by what they do and bundled from upstream projects — see
@@ -141,7 +142,7 @@ You never name a mode. pixel-paule reads your input and chooses:
 | You give it… | Mode | What it does |
 |---|---|---|
 | A description, a brief, or nothing | **New** | Asks 2–3 short questions, shows a quick plan, waits for your OK, then builds → motion → audits. |
-| A URL or an existing site | **From reference** | Reads the reference, then either rebuilds it closely *or* redesigns it while keeping the brand. |
+| A URL or an existing site | **From reference** | Reads the reference, downloads and self-hosts its images and brand assets, then either rebuilds it closely *or* redesigns it while keeping the brand. |
 | A file or project path | **Improve** | Checks the page, fixes problems in place, audits again. Won't change your identity unless you ask. |
 
 ---
@@ -293,7 +294,7 @@ prints a JSON list of findings plus a short summary, and exits non-zero if any
 | Gate | Catches (examples) | An `error` means |
 |---|---|---|
 | `verify-composition` | sideways overflow, uneven card heights, poor text width, low contrast | overflow, or contrast below WCAG AA |
-| `verify-seo-perf` | missing `<title>`/`<h1>`/viewport, weak meta description, OpenGraph/Twitter cards, JSON-LD validity, render-blocking scripts, images with no size (CLS), fonts without `display=swap`, page weight/timing | missing title/`<h1>`/viewport/`og:image`, broken JSON-LD, or accidental `noindex` |
+| `verify-seo-perf` | missing `<title>`/`<h1>`/viewport, weak meta description, OpenGraph/Twitter cards, JSON-LD validity, empty/broken image references, assets still hotlinked instead of self-hosted, render-blocking scripts, images with no size (CLS), fonts without `display=swap`, page weight/timing | missing title/`<h1>`/viewport/`og:image`, broken JSON-LD, an empty or dead local image reference, or accidental `noindex` |
 
 **Exit codes:** `0` clean · `1` at least one `error` left · `2` target unreadable.
 
