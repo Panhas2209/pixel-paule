@@ -9,7 +9,7 @@
         "audit"
       ],
       "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
-      "ref": "v2.9.0",
+      "ref": "v2.15.0",
       "update": {
         "track": "tag",
         "pattern": "v*"
@@ -35,7 +35,7 @@
         "motion"
       ],
       "repo": "https://github.com/emilkowalski/skills",
-      "ref": "8a4a02183f466f54315138e5f94b349df5b84acf",
+      "ref": "d16ebe60d09a5ba2afcb7054ede9d0a10c9f6128",
       "update": {
         "track": "branch",
         "branch": "main"
@@ -56,7 +56,7 @@
         "motion-qa"
       ],
       "repo": "https://github.com/emilkowalski/skills",
-      "ref": "8a4a02183f466f54315138e5f94b349df5b84acf",
+      "ref": "d16ebe60d09a5ba2afcb7054ede9d0a10c9f6128",
       "update": {
         "track": "branch",
         "branch": "main"
@@ -78,7 +78,7 @@
         "extract"
       ],
       "repo": "https://github.com/pbakaus/impeccable",
-      "ref": "skill-v3.8.0",
+      "ref": "skill-v4.3.1",
       "update": {
         "track": "tag",
         "pattern": "skill-v*"
